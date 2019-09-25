@@ -12,11 +12,11 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     field: 'email',
     type: FieldDefinition.Type.STRING,
     description: 'Lead Email String',
-  },{
+  }, {
     field: 'field',
     type: FieldDefinition.Type.STRING,
     description: 'Field name to check',
-  },{
+  }, {
     field: 'expectedValue',
     type: FieldDefinition.Type.ANYSCALAR,
     description: 'Expected field value',
@@ -25,17 +25,20 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
     const request = {
-        collection: "leads",
-        select: ["emailaddress1", stepData.field],
-        count: true
+      collection: 'leads',
+      select: ['emailaddress1', stepData.field],
+      count: true,
     };
 
     try {
       const records = await this.client.retrieveMultiple(request);
       const result = records.find((lead: any) => lead['emailaddress1'] === stepData.email);
-      if(result[stepData.field] == stepData.expectedValue) {
+      // tslint:disable-next-line:triple-equals
+      if (result[stepData.field] == stepData.expectedValue) {
+        // tslint:disable-next-line:max-line-length
         return this.pass('The %s field was set to %s, as expected', [stepData.field, stepData.expectedValue]);
       } else {
+        // tslint:disable-next-line:max-line-length
         return this.fail('Expected %s field to be %s, but it was actually %s', [stepData.field, stepData.expectedValue, result[stepData.field]]);
       }
     } catch (e) {

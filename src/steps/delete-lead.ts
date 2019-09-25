@@ -17,27 +17,27 @@ export class DeleteLead extends BaseStep implements StepInterface {
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
     const retriveRequest = {
-        collection: "leads",
-        select: ["emailaddress1"],
-        count: true
-      };
+      collection: 'leads',
+      select: ['emailaddress1'],
+      count: true,
+    };
 
     try {
       const records = await this.client.retrieveMultiple(retriveRequest);
-      const lead = records.find((lead: any) => lead['emailaddress1'] == stepData.email) || null
-      if(lead) {
+      // tslint:disable-next-line:triple-equals
+      const lead = records.find((lead: any) => lead['emailaddress1'] == stepData.email);
+      if (lead) {
         const deleteRequest = {
-            key: lead.leadid,
-            collection: 'leads',
-        }
+          key: lead.leadid,
+          collection: 'leads',
+        };
         const result = await this.client.delete(deleteRequest);
-        if(result) {
-        return this.pass('Successfully deleted Lead %s', [stepData.email]);
+        if (result) {
+          return this.pass('Successfully deleted Lead %s', [stepData.email]);
         } else {
-        return this.fail('Failed to delete Lead %s', [stepData.email]);
+          return this.fail('Failed to delete Lead %s', [stepData.email]);
         }
-      }
-      else {
+      } else {
         return this.error('Lead %s does not exist', [stepData.email]);
       }
     } catch (e) {
