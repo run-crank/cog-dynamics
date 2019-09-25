@@ -1,8 +1,6 @@
-import { RunStepRequest } from './../proto/cog_pb.d';
 import * as DynamicsWebApi from 'dynamics-web-api';
 import * as AuthenticationContext from 'adal-node';
 import * as grpc from 'grpc';
-import * as needle from 'needle';
 import { Field } from '../core/base-step';
 import { FieldDefinition } from '../proto/cog_pb';
 
@@ -63,16 +61,17 @@ export class ClientWrapper {
    *   simplify automated testing. Should default to the class/constructor of
    *   the underlying/wrapped API client.
    */
+  // tslint:disable-next-line:max-line-length
   constructor(auth: grpc.Metadata, clientConstructor = DynamicsWebApi, adal = AuthenticationContext) {
-    var authContext = adal.AuthenticationContext;
-    var adalContext = new authContext(`https://login.microsoftonline.com/${auth.get('tenantId')[0]}/oauth2/token`);
+    const authContext = adal.AuthenticationContext;
+    const adalContext = new authContext(`https://login.microsoftonline.com/${auth.get('tenantId')[0]}/oauth2/token`);
 
     function acquireToken(dynamicsWebApiCallback) {
       function adalCallback(error, token) {
         if (!error) {
           dynamicsWebApiCallback(token);
-        }
-        else {
+        } else {
+          // tslint:disable-next-line:prefer-template
           console.log('Token has not been retrieved. Error: ' + error.stack);
         }
       }
@@ -82,7 +81,7 @@ export class ClientWrapper {
 
     this.client = new clientConstructor({
       webApiUrl: `${auth.get('resource')}/api/data/v9.0/`,
-      onTokenRefresh: acquireToken
+      onTokenRefresh: acquireToken,
     });
   }
 
@@ -90,11 +89,11 @@ export class ClientWrapper {
     await this.clientReady;
     return new Promise((resolve, reject) => {
       try {
-        this.client.createRequest(request).then(function (record) {
+        this.client.createRequest(request).then((record) => {
           resolve(record);
-        }).catch(function (e) {
+        }).catch((e) => {
           reject(e);
-        })
+        });
       } catch (e) {
         reject(e);
       }
@@ -105,16 +104,15 @@ export class ClientWrapper {
     await this.clientReady;
     return new Promise((resolve, reject) => {
       try {
-        this.client.deleteRequest(request).then(function (isDeleted) {
-          if (isDeleted){
-              resolve(true);
+        this.client.deleteRequest(request).then((isDeleted) => {
+          if (isDeleted) {
+            resolve(true);
+          } else {
+            resolve(false);
           }
-          else{
-              resolve(false);
-          }
-        }).catch(function (e) {
+        }).catch((e) => {
           reject(e);
-        })
+        });
       } catch (e) {
         reject(e);
       }
@@ -125,11 +123,11 @@ export class ClientWrapper {
     await this.clientReady;
     return new Promise((resolve, reject) => {
       try {
-        this.client.retrieveMultipleRequest(request).then(function (records) {
+        this.client.retrieveMultipleRequest(request).then((records) => {
           resolve(records.value);
-        }).catch(function (e) {
+        }).catch((e) => {
           reject(e);
-        })
+        });
       } catch (e) {
         reject(e);
       }

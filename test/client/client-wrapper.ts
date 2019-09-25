@@ -12,8 +12,8 @@ describe('ClientWrapper', () => {
   const expect = chai.expect;
   let dynamicsClientStub: any;
   let adalStub: any;
-  let metadata: Metadata;
-  let clientWrapperUnderTest: ClientWrapper;
+  // let metadata: Metadata;
+  // let clientWrapperUnderTest: ClientWrapper;
 
   beforeEach(() => {
     dynamicsClientStub = sinon.stub();

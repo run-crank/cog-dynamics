@@ -16,7 +16,7 @@ export class CreateLead extends BaseStep implements StepInterface {
 
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
-    
+
     const request = {
       collection: 'leads',
       entity: stepData.lead,
