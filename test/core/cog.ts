@@ -39,9 +39,18 @@ describe('Cog:GetManifest', () => {
       });
 
       // Useragent auth field
-      const ua: any = authFields.filter(a => a.key === 'userAgent')[0];
-      expect(ua.type).to.equal(FieldDefinition.Type.STRING);
-      expect(ua.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const r: any = authFields.filter(a => a.key === 'resource')[0];
+      expect(r.type).to.equal(FieldDefinition.Type.STRING);
+      expect(r.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const ti: any = authFields.filter(a => a.key === 'tenantId')[0];
+      expect(ti.type).to.equal(FieldDefinition.Type.STRING);
+      expect(ti.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const ci: any = authFields.filter(a => a.key === 'clientId')[0];
+      expect(ci.type).to.equal(FieldDefinition.Type.STRING);
+      expect(ci.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const cs: any = authFields.filter(a => a.key === 'clientSecret')[0];
+      expect(cs.type).to.equal(FieldDefinition.Type.STRING);
+      expect(cs.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
 
       done();
     });

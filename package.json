@@ -56,6 +56,8 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
+    "adal-node": "^0.2.1",
+    "dynamics-web-api": "^1.5.10",
     "google-protobuf": "^3.8.0",
     "grpc": "^1.21.1",
     "needle": "^2.4.0",

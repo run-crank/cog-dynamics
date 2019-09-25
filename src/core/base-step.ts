@@ -1,5 +1,6 @@
 import { StepDefinition, FieldDefinition, Step as PbStep, RunStepResponse } from '../proto/cog_pb';
 import { Value } from 'google-protobuf/google/protobuf/struct_pb';
+import { ClientWrapper } from '../client/client-wrapper';
 
 export interface StepInterface {
   getId(): string;
@@ -20,7 +21,7 @@ export abstract class BaseStep {
   protected stepType: StepDefinition.Type;
   protected expectedFields: Field[];
 
-  constructor(protected client) {}
+  constructor(protected client: ClientWrapper) {}
 
   getId(): string {
     return this.constructor.name;

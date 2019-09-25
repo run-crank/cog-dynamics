@@ -1,3 +1,6 @@
+import { RunStepRequest } from './../proto/cog_pb.d';
+import * as DynamicsWebApi from 'dynamics-web-api';
+import * as AuthenticationContext from 'adal-node';
 import * as grpc from 'grpc';
 import * as needle from 'needle';
 import { Field } from '../core/base-step';
@@ -18,17 +21,35 @@ export class ClientWrapper {
    *
    * If your Cog does not require authentication, set this to an empty array.
    */
-  public static expectedAuthFields: Field[] = [{
-    field: 'userAgent',
-    type: FieldDefinition.Type.STRING,
-    description: 'User Agent String',
-  }];
+  public static expectedAuthFields: Field[] = [
+    {
+      field: 'tenantId',
+      type: FieldDefinition.Type.STRING,
+      description: 'TenantId String',
+    },
+    {
+      field: 'resource',
+      type: FieldDefinition.Type.STRING,
+      description: 'Resource URL String',
+    },
+    {
+      field: 'clientId',
+      type: FieldDefinition.Type.STRING,
+      description: 'Client Id String',
+    },
+    {
+      field: 'clientSecret',
+      type: FieldDefinition.Type.STRING,
+      description: 'Client Secret String',
+    },
+  ];
 
   /**
    * Private instance of the wrapped API client. You will almost certainly want
    * to swap this out for an API client specific to your Cog's needs.
    */
   private client: any;
+  private clientReady: Promise<boolean>;
 
   /**
    * Constructs an instance of the ClientWwrapper, authenticating the wrapped
@@ -42,25 +63,76 @@ export class ClientWrapper {
    *   simplify automated testing. Should default to the class/constructor of
    *   the underlying/wrapped API client.
    */
-  constructor (auth: grpc.Metadata, clientConstructor = needle) {
-    // Call auth.get() for any field defined in the static expectedAuthFields
-    // array here. The argument passed to get() should match the "field" prop
-    // declared on the definition object above.
-    const uaString: string = auth.get('userAgent').toString();
-    this.client = clientConstructor;
+  constructor(auth: grpc.Metadata, clientConstructor = DynamicsWebApi, adal = AuthenticationContext) {
+    var authContext = adal.AuthenticationContext;
+    var adalContext = new authContext(`https://login.microsoftonline.com/${auth.get('tenantId')[0]}/oauth2/token`);
 
-    // Authenticate the underlying client here.
-    this.client.defaults({ user_agent: uaString });
+    function acquireToken(dynamicsWebApiCallback) {
+      function adalCallback(error, token) {
+        if (!error) {
+          dynamicsWebApiCallback(token);
+        }
+        else {
+          console.log('Token has not been retrieved. Error: ' + error.stack);
+        }
+      }
+
+      adalContext.acquireTokenWithClientCredentials(auth.get('resource')[0].toString(), auth.get('clientId')[0].toString(), auth.get('clientSecret')[0].toString(), adalCallback);
+    }
+
+    this.client = new clientConstructor({
+      webApiUrl: `${auth.get('resource')}/api/data/v9.0/`,
+      onTokenRefresh: acquireToken
+    });
   }
 
-  /**
-   * An example of how to expose the underlying API client to your steps. Any
-   * public methods exposed on this class can be invoked in your steps'
-   * executeStep methods like so: this.client.getUserByEmail()
-   */
-  public async getUserByEmail(email: string): Promise<needle.NeedleResponse> {
-    // Naturally, the code here will depend on the actual API client you use.
-    return this.client(`https://jsonplaceholder.typicode.com/users?email=${email}`);
+  public async create(request: any): Promise<any> {
+    await this.clientReady;
+    return new Promise((resolve, reject) => {
+      try {
+        this.client.createRequest(request).then(function (record) {
+          resolve(record);
+        }).catch(function (e) {
+          reject(e);
+        })
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
+  public async delete(request: any): Promise<any> {
+    await this.clientReady;
+    return new Promise((resolve, reject) => {
+      try {
+        this.client.deleteRequest(request).then(function (isDeleted) {
+          if (isDeleted){
+              resolve(true);
+          }
+          else{
+              resolve(false);
+          }
+        }).catch(function (e) {
+          reject(e);
+        })
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  public async retrieveMultiple(request: any): Promise<any> {
+    await this.clientReady;
+    return new Promise((resolve, reject) => {
+      try {
+        this.client.retrieveMultipleRequest(request).then(function (records) {
+          resolve(records.value);
+        }).catch(function (e) {
+          reject(e);
+        })
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 }
