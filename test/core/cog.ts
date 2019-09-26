@@ -4,9 +4,9 @@ import { default as sinon } from 'ts-sinon';
 import * as sinonChai from 'sinon-chai';
 import 'mocha';
 
-import { Step as ProtoStep, StepDefinition, FieldDefinition, RunStepResponse, RunStepRequest } from '../../src/proto/cog_pb';
+// tslint:disable-next-line:max-line-length
+import { Step as ProtoStep, StepDefinition, FieldDefinition, RunStepResponse, RunStepRequest, CogManifest } from '../../src/proto/cog_pb';
 import { Cog } from '../../src/core/cog';
-import { CogManifest } from '../../src/proto/cog_pb';
 import { Metadata } from 'grpc';
 import { Duplex } from 'stream';
 
@@ -39,9 +39,18 @@ describe('Cog:GetManifest', () => {
       });
 
       // Useragent auth field
-      const ua: any = authFields.filter(a => a.key === 'userAgent')[0];
-      expect(ua.type).to.equal(FieldDefinition.Type.STRING);
-      expect(ua.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const r: any = authFields.filter(a => a.key === 'resource')[0];
+      expect(r.type).to.equal(FieldDefinition.Type.STRING);
+      expect(r.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const ti: any = authFields.filter(a => a.key === 'tenantId')[0];
+      expect(ti.type).to.equal(FieldDefinition.Type.STRING);
+      expect(ti.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const ci: any = authFields.filter(a => a.key === 'clientId')[0];
+      expect(ci.type).to.equal(FieldDefinition.Type.STRING);
+      expect(ci.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+      const cs: any = authFields.filter(a => a.key === 'clientSecret')[0];
+      expect(cs.type).to.equal(FieldDefinition.Type.STRING);
+      expect(cs.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
 
       done();
     });
@@ -52,6 +61,7 @@ describe('Cog:GetManifest', () => {
       const stepDefs: StepDefinition[] = manifest.getStepDefinitionsList();
 
       // Test for the presence of step definitions in your manifest like this:
+      // tslint:disable-next-line:max-line-length
       // const someStepExists: boolean = stepDefs.filter(s => s.getStepId() === 'SomeStepClass').length === 1;
       // expect(someStepExists).to.equal(true);
 
@@ -64,15 +74,15 @@ describe('Cog:GetManifest', () => {
 describe('Cog:RunStep', () => {
   const expect = chai.expect;
   let protoStep: ProtoStep;
-  let grpcUnaryCall: any = {};
+  const grpcUnaryCall: any = {};
   let cogUnderTest: Cog;
   let clientWrapperStub: any;
 
   beforeEach(() => {
     protoStep = new ProtoStep();
     grpcUnaryCall.request = {
-      getStep: function () {return protoStep},
-      metadata: null
+      getStep () { return protoStep; },
+      metadata: null,
     };
     clientWrapperStub = sinon.stub();
     cogUnderTest = new Cog(clientWrapperStub);
@@ -86,7 +96,7 @@ describe('Cog:RunStep', () => {
     cogUnderTest.runStep(grpcUnaryCall, (err, response: RunStepResponse) => {
       expect(clientWrapperStub).to.have.been.calledWith(grpcUnaryCall.metadata);
       done();
-    })
+    });
   });
 
   it('responds with error when called with unknown stepId', (done) => {
@@ -101,9 +111,9 @@ describe('Cog:RunStep', () => {
 
   it('invokes step class as expected', (done) => {
     const expectedResponse = new RunStepResponse();
-    const mockStepExecutor: any = {executeStep: sinon.stub()}
+    const mockStepExecutor: any = { executeStep: sinon.stub() };
     mockStepExecutor.executeStep.resolves(expectedResponse);
-    const mockTestStepMap: any = {TestStepId: sinon.stub()}
+    const mockTestStepMap: any = { TestStepId: sinon.stub() };
     mockTestStepMap.TestStepId.returns(mockStepExecutor);
 
     cogUnderTest = new Cog(clientWrapperStub, mockTestStepMap);
@@ -118,9 +128,9 @@ describe('Cog:RunStep', () => {
   });
 
   it('responds with error when step class throws an exception', (done) => {
-    const mockStepExecutor: any = {executeStep: sinon.stub()}
-    mockStepExecutor.executeStep.throws()
-    const mockTestStepMap: any = {TestStepId: sinon.stub()}
+    const mockStepExecutor: any = { executeStep: sinon.stub() };
+    mockStepExecutor.executeStep.throws();
+    const mockTestStepMap: any = { TestStepId: sinon.stub() };
     mockTestStepMap.TestStepId.returns(mockStepExecutor);
 
     cogUnderTest = new Cog(clientWrapperStub, mockTestStepMap);
@@ -145,7 +155,7 @@ describe('Cog:RunSteps', () => {
   beforeEach(() => {
     protoStep = new ProtoStep();
     runStepRequest = new RunStepRequest();
-    grpcDuplexStream = new Duplex({objectMode: true});
+    grpcDuplexStream = new Duplex({ objectMode: true });
     grpcDuplexStream._write = sinon.stub().callsArg(2);
     grpcDuplexStream._read = sinon.stub();
     grpcDuplexStream.metadata = new Metadata();
@@ -166,7 +176,7 @@ describe('Cog:RunSteps', () => {
     // Does not attempt to reinstantiate client.
     grpcDuplexStream.emit('data', runStepRequest);
     return expect(clientWrapperStub).to.have.been.calledOnce;
-});
+  });
 
   it('responds with error when called with unknown stepId', (done) => {
     // Construct step request
@@ -183,15 +193,15 @@ describe('Cog:RunSteps', () => {
       expect(result.getOutcome()).to.equal(RunStepResponse.Outcome.ERROR);
       expect(result.getMessageFormat()).to.equal('Unknown step %s');
       done();
-    }, 1)
+    });
   });
 
   it('invokes step class as expected', (done) => {
     // Construct a mock step executor and request request
     const expectedResponse = new RunStepResponse();
-    const mockStepExecutor: any = {executeStep: sinon.stub()}
+    const mockStepExecutor: any = { executeStep: sinon.stub() };
     mockStepExecutor.executeStep.resolves(expectedResponse);
-    const mockTestStepMap: any = {TestStepId: sinon.stub()}
+    const mockTestStepMap: any = { TestStepId: sinon.stub() };
     mockTestStepMap.TestStepId.returns(mockStepExecutor);
     cogUnderTest = new Cog(clientWrapperStub, mockTestStepMap);
     protoStep.setStepId('TestStepId');
@@ -207,14 +217,14 @@ describe('Cog:RunSteps', () => {
       expect(mockStepExecutor.executeStep).to.have.been.calledWith(protoStep);
       expect(grpcDuplexStream._write.lastCall.args[0]).to.deep.equal(expectedResponse);
       done();
-    }, 1);
+    });
   });
 
   it('responds with error when step class throws an exception', (done) => {
     // Construct a mock step executor and request request
-    const mockStepExecutor: any = {executeStep: sinon.stub()}
-    mockStepExecutor.executeStep.throws()
-    const mockTestStepMap: any = {TestStepId: sinon.stub()}
+    const mockStepExecutor: any = { executeStep: sinon.stub() };
+    mockStepExecutor.executeStep.throws();
+    const mockTestStepMap: any = { TestStepId: sinon.stub() };
     mockTestStepMap.TestStepId.returns(mockStepExecutor);
     cogUnderTest = new Cog(clientWrapperStub, mockTestStepMap);
     protoStep.setStepId('TestStepId');
