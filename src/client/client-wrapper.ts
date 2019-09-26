@@ -65,20 +65,21 @@ export class ClientWrapper {
   constructor(auth: grpc.Metadata, clientConstructor = DynamicsWebApi, adal = AuthenticationContext) {
     const authContext = adal.AuthenticationContext;
     const adalContext = new authContext(`https://login.microsoftonline.com/${auth.get('tenantId')[0]}/oauth2/token`);
-
     function acquireToken(dynamicsWebApiCallback) {
-      function adalCallback(error, token) {
-        if (!error) {
-          dynamicsWebApiCallback(token);
-        } else {
-          // tslint:disable-next-line:prefer-template
-          console.log('Token has not been retrieved. Error: ' + error.stack);
-        }
-      }
-
-      adalContext.acquireTokenWithClientCredentials(auth.get('resource')[0].toString(), auth.get('clientId')[0].toString(), auth.get('clientSecret')[0].toString(), adalCallback);
+      adalContext.acquireTokenWithClientCredentials(
+        auth.get('resource')[0].toString(),
+        auth.get('clientId')[0].toString(),
+        auth.get('clientSecret')[0].toString(),
+        (error, token) => {
+          if (!error) {
+            dynamicsWebApiCallback(token);
+            this.clientReady = Promise.resolve(true);
+          } else {
+            // tslint:disable-next-line:prefer-template
+            console.log('Token has not been retrieved. Error: ' + error.stack);
+          }
+        });
     }
-
     this.client = new clientConstructor({
       webApiUrl: `${auth.get('resource')}/api/data/v9.0/`,
       onTokenRefresh: acquireToken,

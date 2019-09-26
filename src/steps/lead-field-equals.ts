@@ -6,7 +6,7 @@ import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto
 export class LeadFieldEquals extends BaseStep implements StepInterface {
 
   protected stepName: string = 'Check a field on a Dynamics CRM Lead';
-  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics lead (?<email>.+) should be (?<expectedValue>.+)';
+  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should be (?<expectedValue>.+)';
   protected stepType: StepDefinition.Type = StepDefinition.Type.ACTION;
   protected expectedFields: Field[] = [{
     field: 'email',

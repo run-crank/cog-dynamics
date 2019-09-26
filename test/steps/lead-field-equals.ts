@@ -25,7 +25,7 @@ describe('LeadFieldEqualsStep', () => {
     const stepDef: StepDefinition = stepUnderTest.getDefinition();
     expect(stepDef.getStepId()).to.equal('LeadFieldEquals');
     expect(stepDef.getName()).to.equal('Check a field on a Dynamics CRM Lead');
-    expect(stepDef.getExpression()).to.equal('the (?<field>[a-zA-Z0-9_]+) field on dynamics lead (?<email>.+) should be (?<expectedValue>.+)');
+    expect(stepDef.getExpression()).to.equal('the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should be (?<expectedValue>.+)');
     expect(stepDef.getType()).to.equal(StepDefinition.Type.ACTION);
   });
 
