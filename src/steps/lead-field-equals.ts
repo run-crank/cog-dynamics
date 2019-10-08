@@ -11,7 +11,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
   protected expectedFields: Field[] = [{
     field: 'email',
     type: FieldDefinition.Type.STRING,
-    description: 'Lead Email String',
+    description: "Lead's email address",
   }, {
     field: 'field',
     type: FieldDefinition.Type.STRING,

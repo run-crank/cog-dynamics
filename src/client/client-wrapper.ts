@@ -71,13 +71,8 @@ export class ClientWrapper {
         auth.get('clientId')[0].toString(),
         auth.get('clientSecret')[0].toString(),
         (error, token) => {
-          if (!error) {
-            dynamicsWebApiCallback(token);
-            this.clientReady = Promise.resolve(true);
-          } else {
-            // tslint:disable-next-line:prefer-template
-            console.log('Token has not been retrieved. Error: ' + error.stack);
-          }
+          dynamicsWebApiCallback(token);
+          this.clientReady = Promise.resolve(true);
         });
     }
     this.client = new clientConstructor({
@@ -93,6 +88,9 @@ export class ClientWrapper {
         this.client.createRequest(request).then((record) => {
           resolve(record);
         }).catch((e) => {
+          if (e.status.toString() === '401') {
+            reject('Credentials are invalid. Please check them and try again.');
+          }
           reject(e);
         });
       } catch (e) {
@@ -112,6 +110,9 @@ export class ClientWrapper {
             resolve(false);
           }
         }).catch((e) => {
+          if (e.status.toString() === '401') {
+            reject('Credentials are invalid. Please check them and try again.');
+          }
           reject(e);
         });
       } catch (e) {
@@ -127,6 +128,9 @@ export class ClientWrapper {
         this.client.retrieveMultipleRequest(request).then((records) => {
           resolve(records.value);
         }).catch((e) => {
+          if (e.status.toString() === '401') {
+            reject('Credentials are invalid. Please check them and try again.');
+          }
           reject(e);
         });
       } catch (e) {
