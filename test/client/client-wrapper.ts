@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import { default as sinon } from 'ts-sinon';
 import * as sinonChai from 'sinon-chai';
+import * as justForIdeTypeHinting from 'chai-as-promised';
 import 'mocha';
 
 import { ClientWrapper } from '../../src/client/client-wrapper';
