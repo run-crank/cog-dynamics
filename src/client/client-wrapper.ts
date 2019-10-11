@@ -24,22 +24,22 @@ class ClientWrapper {
     {
       field: 'tenantId',
       type: FieldDefinition.Type.STRING,
-      description: 'TenantId String',
+      description: 'Tenant Id',
     },
     {
       field: 'resource',
       type: FieldDefinition.Type.STRING,
-      description: 'Resource URL String',
+      description: 'Resource URL',
     },
     {
       field: 'clientId',
       type: FieldDefinition.Type.STRING,
-      description: 'Client Id String',
+      description: 'Client Id',
     },
     {
       field: 'clientSecret',
       type: FieldDefinition.Type.STRING,
-      description: 'Client Secret String',
+      description: 'Client Secret',
     },
   ];
 
