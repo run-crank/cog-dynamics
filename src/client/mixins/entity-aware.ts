@@ -11,7 +11,7 @@ export class EntityAwareMixin {
         this.client.createRequest(request).then((record) => {
           resolve(record);
         }).catch((e) => {
-          if (e.status.toString() === '401' || e.status.toString() === '400' || e.code.toString() === 'ENOTFOUND') {
+          if (e.status == '401' || e.status == '400' || e.code == 'ENOTFOUND') {
             reject('Credentials are invalid. Please check them and try again.');
           }
           reject(e);
@@ -33,7 +33,7 @@ export class EntityAwareMixin {
             resolve(false);
           }
         }).catch((e) => {
-          if (e.status.toString() === '401' || e.status.toString() === '400') {
+          if (e.status == '401' || e.status == '400' || e.code == 'ENOTFOUND') {
             reject('Credentials are invalid. Please check them and try again.');
           }
           reject(e);
