@@ -24,7 +24,7 @@ class ClientWrapper {
   public static expectedAuthFields: Field[] = [
     {
       field: 'resource',
-      type: FieldDefinition.Type.STRING,
+      type: FieldDefinition.Type.URL,
       description: 'Resource URL',
     },
     {
