@@ -40,11 +40,8 @@ describe('Cog:GetManifest', () => {
 
       // Useragent auth field
       const r: any = authFields.filter(a => a.key === 'resource')[0];
-      expect(r.type).to.equal(FieldDefinition.Type.STRING);
+      expect(r.type).to.equal(FieldDefinition.Type.URL);
       expect(r.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
-      const ti: any = authFields.filter(a => a.key === 'tenantId')[0];
-      expect(ti.type).to.equal(FieldDefinition.Type.STRING);
-      expect(ti.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
       const ci: any = authFields.filter(a => a.key === 'clientId')[0];
       expect(ci.type).to.equal(FieldDefinition.Type.STRING);
       expect(ci.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);

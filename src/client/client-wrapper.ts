@@ -1,6 +1,7 @@
 import * as DynamicsWebApi from 'dynamics-web-api';
 import * as AuthenticationContext from 'adal-node';
 import * as grpc from 'grpc';
+import * as request from 'request';
 import { Field } from '../core/base-step';
 import { FieldDefinition } from '../proto/cog_pb';
 import { EntityAwareMixin } from './mixins/entity-aware';
@@ -22,13 +23,8 @@ class ClientWrapper {
    */
   public static expectedAuthFields: Field[] = [
     {
-      field: 'tenantId',
-      type: FieldDefinition.Type.STRING,
-      description: 'Tenant Id',
-    },
-    {
       field: 'resource',
-      type: FieldDefinition.Type.STRING,
+      type: FieldDefinition.Type.URL,
       description: 'Resource URL',
     },
     {
@@ -64,21 +60,47 @@ class ClientWrapper {
    */
   // tslint:disable-next-line:max-line-length
   constructor(auth: grpc.Metadata, clientConstructor = DynamicsWebApi, adal = AuthenticationContext) {
-    const authContext = adal.AuthenticationContext;
-    const adalContext = new authContext(`https://login.microsoftonline.com/${auth.get('tenantId')[0]}/oauth2/token`);
-    function acquireToken(dynamicsWebApiCallback) {
-      adalContext.acquireTokenWithClientCredentials(
-        auth.get('resource')[0].toString(),
-        auth.get('clientId')[0].toString(),
-        auth.get('clientSecret')[0].toString(),
-        (error, token) => {
-          dynamicsWebApiCallback(token);
-          this.clientReady = Promise.resolve(true);
+    // Client instantiation is async; all steps await this.clientReady.
+    this.clientReady = new Promise(async (clientIsReady, clientError) => {
+      // First, get the tenant ID dynamically using a "bearer challenge"
+      const tenantId = await new Promise((resolve) => {
+        request(`${auth.get('resource')[0].toString()}/api/data`, (err, res) => {
+          if (err) {
+            return clientError(err);
+          }
+          if (!res.headers.hasOwnProperty('www-authenticate')) {
+            return clientError(Error('Authentication error: unable to retrieve tenant ID using resource URL.'));
+          }
+
+          const matches = /\.microsoftonline\.com\/([a-zA-Z0-9-]+)\//gi.exec(res.headers['www-authenticate']);
+          if (!matches || !matches[1]) {
+            return clientError('Authentication error: unable to extract tenant ID from bearer challenge.');
+          }
+
+          resolve(matches[1]);
         });
-    }
-    this.client = new clientConstructor({
-      webApiUrl: `${auth.get('resource')}/api/data/v9.0/`,
-      onTokenRefresh: acquireToken,
+      });
+
+      // Then, set the client using the given tenant ID, resource, etc.
+      const authContext = adal.AuthenticationContext;
+      const adalContext = new authContext(`https://login.microsoftonline.com/${tenantId}/oauth2/token`);
+      function acquireToken(dynamicsWebApiCallback) {
+        adalContext.acquireTokenWithClientCredentials(
+          auth.get('resource')[0].toString(),
+          auth.get('clientId')[0].toString(),
+          auth.get('clientSecret')[0].toString(),
+          (error, token) => {
+            dynamicsWebApiCallback(token);
+          },
+        );
+      }
+      this.client = new clientConstructor({
+        webApiUrl: `${auth.get('resource')[0].toString()}/api/data/v9.0/`,
+        onTokenRefresh: acquireToken,
+      });
+
+      // Resolve this.clientReady.
+      clientIsReady(true);
     });
   }
 }
