@@ -23,11 +23,6 @@ class ClientWrapper {
    */
   public static expectedAuthFields: Field[] = [
     {
-      field: 'tenantId',
-      type: FieldDefinition.Type.STRING,
-      description: 'Tenant Id',
-    },
-    {
       field: 'resource',
       type: FieldDefinition.Type.STRING,
       description: 'Resource URL',
