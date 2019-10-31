@@ -1,5 +1,7 @@
 # Dynamics Cog
 
+[![CircleCI](https://circleci.com/gh/run-crank/cog-dynamics/tree/master.svg?style=svg)](https://circleci.com/gh/run-crank/cog-dynamics/tree/master)
+
 This is a [Crank][what-is-crank] Cog for Dynamics, providing
 steps and assertions for you to validate the state and behavior of your
 Dynamics instance.
@@ -25,9 +27,13 @@ Note: You can always re-authenticate later.
 ### Authentication
 <!-- run `crank cog:readme automatoninc/dynamics` to update -->
 <!-- authenticationDetails -->
-You will be asked for the following authentication details on installation.
+You will be asked for the following authentication details on installation. To avoid prompts in a CI/CD context, you can provide the same details as environment variables.
 
-- **userAgent**: User Agent String
+| Field | Install-Time Environment Variable | Description |
+| --- | --- | --- |
+| **resource** | `CRANK_AUTOMATONINC_DYNAMICS__RESOURCE` | Resource URL |
+| **clientId** | `CRANK_AUTOMATONINC_DYNAMICS__CLIENTID` | Client Id |
+| **clientSecret** | `CRANK_AUTOMATONINC_DYNAMICS__CLIENTSECRET` | Client Secret |
 
 ```shell-session
 # Re-authenticate by running this
@@ -41,7 +47,11 @@ Scenario files.
 
 <!-- run `crank cog:readme automatoninc/dynamics` to update -->
 <!-- stepDetails -->
-This Cog does not have any steps defined yet!
+| Name (ID) | Expression | Expected Data |
+| --- | --- | --- |
+| **Create a Dynamics CRM Lead**<br>(`CreateLead`) | `create a dynamics crm lead` | - `lead`: A map of field names to field values |
+| **Delete a Dynamics CRM Lead**<br>(`DeleteLead`) | `delete the (?<email>.+) dynamics crm lead` | - `email`: Lead's email address |
+| **Check a field on a Dynamics CRM Lead**<br>(`LeadFieldEquals`) | `the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should be (?<expectedValue>.+)` | - `email`: Lead's email address <br><br>- `field`: Field name to check <br><br>- `expectedValue`: Expected field value |
 <!-- stepDetailsEnd -->
 
 ## Development and Contributing
