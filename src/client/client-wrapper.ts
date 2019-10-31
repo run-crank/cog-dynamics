@@ -61,7 +61,7 @@ class ClientWrapper {
   // tslint:disable-next-line:max-line-length
   constructor(auth: grpc.Metadata, clientConstructor = DynamicsWebApi, adal = AuthenticationContext) {
     // Client instantiation is async; all steps await this.clientReady.
-    this.clientReady = new Promise(async (clientIsready, clientError) => {
+    this.clientReady = new Promise(async (clientIsReady, clientError) => {
       // First, get the tenant ID dynamically using a "bearer challenge"
       const tenantId = await new Promise((resolve) => {
         request(`${auth.get('resource')[0].toString()}/api/data`, (err, res) => {
@@ -100,7 +100,7 @@ class ClientWrapper {
       });
 
       // Resolve this.clientReady.
-      clientIsready(true);
+      clientIsReady(true);
     });
   }
 }
