@@ -59,6 +59,7 @@ describe('LeadFieldEqualsStep', () => {
     const retrieveRequest = {
       collection: 'leads',
       select: ['emailaddress1', 'firstname'],
+      filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
     clientWrapperStub.retrieveMultiple.resolves(expectedRetrieveResponse);
@@ -89,6 +90,7 @@ describe('LeadFieldEqualsStep', () => {
     const retrieveRequest = {
       collection: 'leads',
       select: ['emailaddress1', 'firstname'],
+      filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
     clientWrapperStub.retrieveMultiple.resolves(expectedRetrieveResponse);

@@ -27,6 +27,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     const request = {
       collection: 'leads',
       select: ['emailaddress1', stepData.field],
+      filter: `startswith(emailaddress1, '${stepData.email}')`,
       count: true,
     };
 
