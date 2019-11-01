@@ -37,7 +37,7 @@ describe('LeadFieldEqualsStep', () => {
 
     const email: any = fields.filter(f => f.key === 'email')[0];
     expect(email.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
-    expect(email.type).to.equal(FieldDefinition.Type.STRING);
+    expect(email.type).to.equal(FieldDefinition.Type.EMAIL);
     const field: any = fields.filter(f => f.key === 'field')[0];
     expect(field.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
     expect(field.type).to.equal(FieldDefinition.Type.STRING);

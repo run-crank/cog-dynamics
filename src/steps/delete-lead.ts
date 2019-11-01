@@ -10,7 +10,7 @@ export class DeleteLead extends BaseStep implements StepInterface {
   protected stepType: StepDefinition.Type = StepDefinition.Type.ACTION;
   protected expectedFields: Field[] = [{
     field: 'email',
-    type: FieldDefinition.Type.STRING,
+    type: FieldDefinition.Type.EMAIL,
     description: "Lead's email address",
   }];
 

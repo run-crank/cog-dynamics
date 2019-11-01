@@ -40,7 +40,7 @@ describe('DeleteLeadStep', () => {
     // Lead field
     const lead: any = fields.filter(f => f.key === 'email')[0];
     expect(lead.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
-    expect(lead.type).to.equal(FieldDefinition.Type.STRING);
+    expect(lead.type).to.equal(FieldDefinition.Type.EMAIL);
   });
 
   it('should respond with pass if lead is deleted.', async () => {
