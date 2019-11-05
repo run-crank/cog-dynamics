@@ -1,0 +1,18 @@
+scenario: CRM Dynamics API Test
+description: This test the creation and validation of field in CRM Dynamics.
+
+steps:
+- step: Create a dynamics crm lead.
+  data:
+    lead:
+        emailaddress1: o1@thisisjust.atomatest.com
+        companyname: H2O Corp
+        firstname: Helen
+        lastname: Cruzada
+        subject: Software Testing
+- waitFor: 5
+  step: Validate that the emailaddress1 field on dynamics crm lead o1@thisisjust.atomatest.com should be o1@thisisjust.atomatest.com
+- step: Validate that the firstname field on dynamics crm lead o1@thisisjust.atomatest.com should be Helen
+- step: Validate that the subject field on dynamics crm lead o1@thisisjust.atomatest.com should be Software Testing
+- step: Validate that the companyname field on dynamics crm lead o1@thisisjust.atomatest.com should be H2O Corp
+- step: Delete the o1@thisisjust.atomatest.com dynamics crm lead
