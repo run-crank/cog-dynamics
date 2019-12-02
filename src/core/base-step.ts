@@ -85,7 +85,6 @@ export abstract class BaseStep {
       } else if (operator == 'not contain') {
         return !actualValue.includes(value);
       } else if (operator == 'be greater than') {
-        console.log(dateTimeFormat.test(actualValue) && dateTimeFormat.test(value));
         if (dateTimeFormat.test(actualValue) && dateTimeFormat.test(value)) {
           return moment(actualValue).isAfter(value);
         } else if (!isNaN(Number(actualValue)) && !isNaN(Number(value))) {

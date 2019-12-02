@@ -43,13 +43,14 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     try {
       const records = await this.client.retrieveMultiple(request);
       const result = records.find((lead: any) => lead['emailaddress1'] === email);
-      // tslint:disable-next-line:triple-equals
       if (this.compare(operator, result[field], expectedValue)) {
-        // tslint:disable-next-line:max-line-length
-        return this.pass('The %s field was set to %s, as expected', [field, expectedValue]);
+        return this.pass(this.operatorSuccessMessages[operator.replace(/\s/g, '').toLowerCase()], [field, expectedValue]);
       } else {
-        // tslint:disable-next-line:max-line-length
-        return this.fail('Expected %s field to be %s, but it was actually %s', [field, expectedValue, result[field]]);
+        return this.fail(this.operatorFailMessages[operator.replace(/\s/g, '').toLowerCase()], [
+          field,
+          expectedValue,
+          result[field],
+        ]);
       }
     } catch (e) {
       return this.error('There was a problem checking the Lead: %s', [e.toString()]);
