@@ -6,7 +6,7 @@ import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto
 export class LeadFieldEquals extends BaseStep implements StepInterface {
 
   protected stepName: string = 'Check a field on a Dynamics CRM Lead';
-  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should be (?<expectedValue>.+)';
+  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be less than|be greater than|be|contain|not be|not contain) (?<expectedValue>.+)';
   protected stepType: StepDefinition.Type = StepDefinition.Type.VALIDATION;
   protected expectedFields: Field[] = [{
     field: 'email',
@@ -17,6 +17,11 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     type: FieldDefinition.Type.STRING,
     description: 'Field name to check',
   }, {
+    field: 'operator',
+    type: FieldDefinition.Type.STRING,
+    optionality: FieldDefinition.Optionality.OPTIONAL,
+    description: 'Check Logic (be, not be, contain, not contain, be greater than, or be less than)',
+  }, {
     field: 'expectedValue',
     type: FieldDefinition.Type.ANYSCALAR,
     description: 'Expected field value',
@@ -24,6 +29,10 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
+    const email: string = stepData.email;
+    const field: string = stepData.field;
+    const operator: string = stepData.operator || 'be';
+    const expectedValue: string = stepData.expectedValue;
     const request = {
       collection: 'leads',
       select: ['emailaddress1', stepData.field],
@@ -33,14 +42,15 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
     try {
       const records = await this.client.retrieveMultiple(request);
-      const result = records.find((lead: any) => lead['emailaddress1'] === stepData.email);
-      // tslint:disable-next-line:triple-equals
-      if (result[stepData.field] == stepData.expectedValue) {
-        // tslint:disable-next-line:max-line-length
-        return this.pass('The %s field was set to %s, as expected', [stepData.field, stepData.expectedValue]);
+      const result = records.find((lead: any) => lead['emailaddress1'] === email);
+      if (this.compare(operator, result[field], expectedValue)) {
+        return this.pass(this.operatorSuccessMessages[operator.replace(/\s/g, '').toLowerCase()], [field, expectedValue]);
       } else {
-        // tslint:disable-next-line:max-line-length
-        return this.fail('Expected %s field to be %s, but it was actually %s', [stepData.field, stepData.expectedValue, result[stepData.field]]);
+        return this.fail(this.operatorFailMessages[operator.replace(/\s/g, '').toLowerCase()], [
+          field,
+          expectedValue,
+          result[field],
+        ]);
       }
     } catch (e) {
       return this.error('There was a problem checking the Lead: %s', [e.toString()]);
