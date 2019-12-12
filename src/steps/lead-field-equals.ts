@@ -2,6 +2,8 @@
 
 import { BaseStep, Field, StepInterface } from '../core/base-step';
 import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
+import * as util from '@run-crank/utilities';
+import { baseOperators } from '../client/constants/operators';
 
 export class LeadFieldEquals extends BaseStep implements StepInterface {
 
@@ -53,7 +55,13 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
         ]);
       }
     } catch (e) {
-      return this.error('There was a problem checking the Lead: %s', [e.toString()]);
+      if (e instanceof util.UnknownOperatorError) {
+        return this.error('%s Please provide one of: %s', [e.message, baseOperators.join(', ')]);
+      }
+      if (e instanceof util.InvalidOperandError) {
+        return this.error('There was an error during validation of account field: %s', [e.message]);
+      }
+      return this.error('There was an error during validation of account field: %s', [e.message]);
     }
   }
 
