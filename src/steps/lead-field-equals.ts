@@ -46,9 +46,9 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
       const records = await this.client.retrieveMultiple(request);
       const result = records.find((lead: any) => lead['emailaddress1'] === email);
       if (this.compare(operator, result[field], expectedValue)) {
-        return this.pass(this.operatorSuccessMessages[operator.replace(/\s/g, '').toLowerCase()], [field, expectedValue]);
+        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue]);
       } else {
-        return this.fail(this.operatorFailMessages[operator.replace(/\s/g, '').toLowerCase()], [
+        return this.fail(this.operatorFailMessages[operator], [
           field,
           expectedValue,
           result[field],
