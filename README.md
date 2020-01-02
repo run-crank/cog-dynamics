@@ -51,7 +51,7 @@ Scenario files.
 | --- | --- | --- |
 | **Create a Dynamics CRM Lead**<br>(`CreateLead`) | `create a dynamics crm lead` | - `lead`: A map of field names to field values |
 | **Delete a Dynamics CRM Lead**<br>(`DeleteLead`) | `delete the (?<email>.+) dynamics crm lead` | - `email`: Lead's email address |
-| **Check a field on a Dynamics CRM Lead**<br>(`LeadFieldEquals`) | `the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should be (?<expectedValue>.+)` | - `email`: Lead's email address <br><br>- `field`: Field name to check <br><br>- `expectedValue`: Expected field value |
+| **Check a field on a Dynamics CRM Lead**<br>(`LeadFieldEquals`) | `the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be less than|be greater than|be|contain|not be|not contain) (?<expectedValue>.+)` | - `email`: Lead's email address <br><br>- `field`: Field name to check <br><br>- `operator`: Check Logic (be, not be, contain, not contain, be greater than, or be less than) <br><br>- `expectedValue`: Expected field value |
 <!-- stepDetailsEnd -->
 
 ## Development and Contributing
