@@ -1,4 +1,4 @@
-scenario: CRM Dynamics Lead API Test 
+scenario: CRM Dynamics Lead API with operators Test 
 description: This tests the operators when validating fields of a CRM Dynamics Lead.
 
 steps:
