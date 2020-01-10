@@ -11,8 +11,11 @@ export class EntityAwareMixin {
         this.client.createRequest(request).then((record) => {
           resolve(record);
         }).catch((e) => {
-          if (e.status == '401' || e.status == '400' || e.code == 'ENOTFOUND') {
+          if (e.status == '401') {
             reject('Credentials are invalid. Please check them and try again.');
+          }
+          if (e.status == '400') {
+            reject(JSON.stringify(e.message).split('\\r', 1)[0].replace('\\', ''));
           }
           reject(e);
         });
@@ -33,8 +36,11 @@ export class EntityAwareMixin {
             resolve(false);
           }
         }).catch((e) => {
-          if (e.status == '401' || e.status == '400' || e.code == 'ENOTFOUND') {
+          if (e.status == '401') {
             reject('Credentials are invalid. Please check them and try again.');
+          }
+          if (e.status == '400') {
+            reject(JSON.stringify(e.message).split('\\r', 1)[0].replace('\\', ''));
           }
           reject(e);
         });
@@ -51,8 +57,11 @@ export class EntityAwareMixin {
         this.client.retrieveMultipleRequest(request).then((records) => {
           resolve(records.value);
         }).catch((e) => {
-          if (e.status == '401' || e.status == '400' || e.code == 'ENOTFOUND') {
+          if (e.status == '401') {
             reject('Credentials are invalid. Please check them and try again.');
+          }
+          if (e.status == '400') {
+            reject(JSON.stringify(e.message).split('\\r', 1)[0].replace('\\', ''));
           }
           reject(e);
         });
