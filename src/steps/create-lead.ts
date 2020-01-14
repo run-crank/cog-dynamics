@@ -2,6 +2,7 @@
 
 import { BaseStep, Field, StepInterface } from '../core/base-step';
 import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
+import { isNumber } from 'util';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -16,6 +17,12 @@ export class CreateLead extends BaseStep implements StepInterface {
 
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
+
+    for (const key in stepData.lead) {
+      if (!isNaN(stepData.lead[key])) {
+        stepData.lead[key] = parseFloat(stepData.lead[key]);
+      }
+    }
 
     const request = {
       collection: 'leads',
