@@ -53,7 +53,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
       } else {
         actualValue = result[field];
         if (isDate(result[field])) {
-          actualValue = JSON.stringify(result[field]).replace(/\"/g, '');
+          actualValue = result[field].toISOString();
         }
       }
 
