@@ -30,11 +30,7 @@ export class EntityAwareMixin {
     return new Promise((resolve, reject) => {
       try {
         this.client.deleteRequest(request).then((isDeleted) => {
-          if (isDeleted) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
+          resolve(isDeleted);
         }).catch((e) => {
           if (e.status == '401') {
             reject('Credentials are invalid. Please check them and try again.');

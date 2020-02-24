@@ -1,8 +1,7 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
-import { isNumber } from 'util';
+import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition } from '../proto/cog_pb';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -13,6 +12,12 @@ export class CreateLead extends BaseStep implements StepInterface {
     field: 'lead',
     type: FieldDefinition.Type.MAP,
     description: 'A map of field names to field values',
+  }];
+  protected expectedRecords: ExpectedRecord[] = [{
+    id: 'lead',
+    type: RecordDefinition.Type.KEYVALUE,
+    fields: [],
+    dynamicFields: true,
   }];
 
   async executeStep(step: Step): Promise<RunStepResponse> {
@@ -31,7 +36,11 @@ export class CreateLead extends BaseStep implements StepInterface {
     };
     try {
       const result = await this.client.create(request);
-      return this.pass('Successfully created Lead with ID %s', [result['leadid']]);
+
+      delete result['@odata.etag'];
+      Object.keys(result).forEach(key => result[key] = String(result[key]));
+      const leadRecord = this.keyValue('lead', 'Created Lead', result);
+      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [leadRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Lead: %s', [e.toString()]);
     }

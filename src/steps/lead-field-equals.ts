@@ -46,25 +46,24 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
     try {
       const records = await this.client.retrieveMultiple(request);
-      const result = records.find((lead: any) => lead['emailaddress1'] === email);
-
-      if (!result) {
+      const lead = records.find((lead: any) => lead['emailaddress1'] == email);
+      let leadRecord;
+      if (!lead) {
         return this.error('No Lead was found with email %s', [email]);
       } else {
-        actualValue = result[field];
-        if (isDate(result[field])) {
-          actualValue = result[field].toISOString();
+        actualValue = lead[field];
+        if (isDate(lead[field])) {
+          actualValue = lead[field].toISOString();
         }
+        delete lead['@odata.etag'];
+        Object.keys(lead).forEach(key => lead[key] = String(lead[key]));
+        leadRecord = this.keyValue('lead', 'Created Lead', lead);
       }
 
       if (this.compare(operator, actualValue, expectedValue)) {
-        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue]);
+        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue], [leadRecord]);
       } else {
-        return this.fail(this.operatorFailMessages[operator], [
-          field,
-          expectedValue,
-          actualValue,
-        ]);
+        return this.fail(this.operatorFailMessages[operator], [field, expectedValue, actualValue], [leadRecord]);
       }
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
