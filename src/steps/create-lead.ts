@@ -1,7 +1,7 @@
 /*tslint:disable:no-else-after-return*/
 
 import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition } from '../proto/cog_pb';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -16,7 +16,23 @@ export class CreateLead extends BaseStep implements StepInterface {
   protected expectedRecords: ExpectedRecord[] = [{
     id: 'lead',
     type: RecordDefinition.Type.KEYVALUE,
-    fields: [],
+    fields: [{
+      field: 'leadid',
+      type: FieldDefinition.Type.NUMERIC,
+      description: "Lead's Dynamics ID",
+    }, {
+      field: 'emailaddress1',
+      type: FieldDefinition.Type.EMAIL,
+      description: "Lead's Email Address",
+    }, {
+      field: 'createdon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was created',
+    }, {
+      field: 'modifiedon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was updated',
+    }],
     dynamicFields: true,
   }];
 
@@ -38,12 +54,20 @@ export class CreateLead extends BaseStep implements StepInterface {
       const result = await this.client.create(request);
 
       delete result['@odata.etag'];
-      Object.keys(result).forEach(key => result[key] = String(result[key]));
-      const leadRecord = this.keyValue('lead', 'Created Lead', result);
+      const leadRecord = this.createRecord(result);
       return this.pass('Successfully created Lead with ID %s', [result['leadid']], [leadRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Lead: %s', [e.toString()]);
     }
+  }
+
+  public createRecord(lead): StepRecord {
+    const obj = {};
+    Object.keys(lead).forEach(key => obj[key] = lead[key]);
+    obj['createdon'] = obj['createdon'].toISOString();
+    obj['modifiedon'] = obj['modifiedon'].toISOString();
+    const record = this.keyValue('contact', 'Created Contact', obj);
+    return record;
   }
 
 }

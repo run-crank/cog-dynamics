@@ -33,13 +33,7 @@ export class DeleteLead extends BaseStep implements StepInterface {
           collection: 'leads',
         };
         const result = await this.client.delete(deleteRequest);
-        if (result) {
-          const lead = { emailaddress1: email };
-          const record = this.keyValue('lead', 'Deleted Lead', lead);
-          return this.pass('Successfully deleted Lead %s', [email], [record]);
-        } else {
-          return this.fail('Failed to delete Lead %s', [email]);
-        }
+        return this.pass('Successfully deleted Lead %s', [email]);
       } else {
         return this.error('Lead %s does not exist', [email]);
       }
