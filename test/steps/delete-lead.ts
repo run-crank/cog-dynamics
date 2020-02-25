@@ -75,38 +75,6 @@ describe('DeleteLeadStep', () => {
     expect(response.getOutcome()).to.equal(RunStepResponse.Outcome.PASSED);
   });
 
-  it('should respond with fail if lead fails to be deleted.', async () => {
-    // Stub a response that matches expectations.
-    const expectedRetrieveResponse: any = [
-      {
-        leadid:'anyId',
-        emailaddress1: 'anyemail@email.com',
-      },
-    ];
-    const expectedDeleteResponse: any = false;
-
-    clientWrapperStub.retrieveMultiple.resolves(expectedRetrieveResponse);
-    clientWrapperStub.delete.resolves(expectedDeleteResponse);
-
-    const retrieveRequest = {
-      collection: 'leads',
-      select: ['emailaddress1'],
-      count: true,
-    };
-    const deleteRequest = {
-      key: expectedRetrieveResponse[0].leadid,
-      collection: 'leads',
-    };
-    // Set step data corresponding to expectations
-    const expectedLead: any = { email: 'anyemail@email.com' };
-    protoStep.setData(Struct.fromJavaScript(expectedLead));
-
-    const response: RunStepResponse = await stepUnderTest.executeStep(protoStep);
-    expect(clientWrapperStub.retrieveMultiple).to.have.been.calledWith(retrieveRequest);
-    expect(clientWrapperStub.delete).to.have.been.calledWith(deleteRequest);
-    expect(response.getOutcome()).to.equal(RunStepResponse.Outcome.FAILED);
-  });
-
   it('should respond with error if not able to get lead with expected email.', async () => {
     // Stub a response that matches expectations.
     const expectedRetrieveResponse: any = [

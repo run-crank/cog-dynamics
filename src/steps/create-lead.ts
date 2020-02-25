@@ -66,7 +66,7 @@ export class CreateLead extends BaseStep implements StepInterface {
     Object.keys(lead).forEach(key => obj[key] = lead[key]);
     obj['createdon'] = obj['createdon'].toISOString();
     obj['modifiedon'] = obj['modifiedon'].toISOString();
-    const record = this.keyValue('contact', 'Created Lead', obj);
+    const record = this.keyValue('lead', 'Created Lead', obj);
     return record;
   }
 

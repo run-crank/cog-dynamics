@@ -56,12 +56,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'somefirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -87,12 +88,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'somefirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -119,12 +121,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'someOtherfirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -151,12 +154,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'somefirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -183,12 +187,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -216,12 +221,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someNumberField: '200',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someNumberField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -249,12 +255,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someNumberField: '50',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someNumberField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -282,12 +289,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'somefirstname',
         someDateField: '2001-01-01',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someDateField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -315,12 +323,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someDateField: '1999-01-01',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someDateField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -348,12 +357,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someNumberField: '50',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someNumberField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -381,12 +391,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someNumberField: '50',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someNumberField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -414,12 +425,13 @@ describe('LeadFieldEqualsStep', () => {
         emailaddress1: 'anyemail@email.com',
         firstname: 'sumfirstname',
         someNumberField: '50',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'someNumberField'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
@@ -446,12 +458,13 @@ describe('LeadFieldEqualsStep', () => {
         leadid:'anyId',
         emailaddress1: 'anyemail@email.com',
         firstname: 'somefirstname',
+        createdon: new Date(),
+        modifiedon: new Date(),
       },
     ];
     // A request with firstname as sample field
     const retrieveRequest = {
       collection: 'leads',
-      select: ['emailaddress1', 'firstname'],
       filter: `startswith(emailaddress1, '${expectedRetrieveResponse[0].emailaddress1}')`,
       count: true,
     };
