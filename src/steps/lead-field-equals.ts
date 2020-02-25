@@ -1,7 +1,7 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
+import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
 import * as util from '@run-crank/utilities';
 import { baseOperators } from '../client/constants/operators';
 import { isDate } from 'util';
@@ -30,6 +30,29 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     description: 'Expected field value',
   }];
 
+  protected expectedRecords: ExpectedRecord[] = [{
+    id: 'lead',
+    type: RecordDefinition.Type.KEYVALUE,
+    fields: [{
+      field: 'leadid',
+      type: FieldDefinition.Type.NUMERIC,
+      description: "Lead's Dynamics ID",
+    }, {
+      field: 'emailaddress1',
+      type: FieldDefinition.Type.EMAIL,
+      description: "Lead's Email Address",
+    }, {
+      field: 'createdon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was created',
+    }, {
+      field: 'modifiedon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was updated',
+    }],
+    dynamicFields: true,
+  }];
+
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
     const email: string = stepData.email;
@@ -38,7 +61,6 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     const expectedValue: string = stepData.expectedValue;
     const request = {
       collection: 'leads',
-      select: ['emailaddress1', stepData.field],
       filter: `startswith(emailaddress1, '${stepData.email}')`,
       count: true,
     };
@@ -46,25 +68,23 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
     try {
       const records = await this.client.retrieveMultiple(request);
-      const result = records.find((lead: any) => lead['emailaddress1'] === email);
-
-      if (!result) {
+      const lead = records.find((lead: any) => lead['emailaddress1'] == email);
+      let leadRecord;
+      if (!lead) {
         return this.error('No Lead was found with email %s', [email]);
       } else {
-        actualValue = result[field];
-        if (isDate(result[field])) {
-          actualValue = result[field].toISOString();
+        actualValue = lead[field];
+        if (isDate(lead[field])) {
+          actualValue = lead[field].toISOString();
         }
+        delete lead['@odata.etag'];
+        leadRecord = this.createRecord(lead);
       }
 
       if (this.compare(operator, actualValue, expectedValue)) {
-        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue]);
+        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue], [leadRecord]);
       } else {
-        return this.fail(this.operatorFailMessages[operator], [
-          field,
-          expectedValue,
-          actualValue,
-        ]);
+        return this.fail(this.operatorFailMessages[operator], [field, expectedValue, actualValue], [leadRecord]);
       }
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
@@ -75,6 +95,15 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
       }
       return this.error('There was an checking the lead field: %s', [e.toString()]);
     }
+  }
+
+  public createRecord(lead): StepRecord {
+    const obj = {};
+    Object.keys(lead).forEach((key) => {
+      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    });
+    const record = this.keyValue('lead', 'Checked Lead', obj);
+    return record;
   }
 
 }

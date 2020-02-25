@@ -42,22 +42,30 @@ describe('CreateLeadStep', () => {
   });
 
   it('should respond with pass if lead is created.', async () => {
-    // Stub a response that matches expectations.
-    const expectedResponse: any = { leadid: 'abcxyz' };
-    clientWrapperStub.create.resolves(expectedResponse);
-
     // Set step data corresponding to expectations
     const expectedLead: any = {
+      leadid: 'someID',
+      emailaddress1: 'anything@example.com',
+      firstname: 'sample',
+      lastname: 'sample',
+      createdon: new Date(),
+      modifiedon: new Date(),
+    };
+    const leadInput: any = {
       lead: {
         emailaddress1: 'anything@example.com',
         firstname: 'sample',
         lastname: 'sample',
       },
     };
-    protoStep.setData(Struct.fromJavaScript(expectedLead));
+
+    // Stub a response that matches expectations.
+    clientWrapperStub.create.resolves(expectedLead);
+
+    protoStep.setData(Struct.fromJavaScript(leadInput));
     const request = {
       collection: 'leads',
-      entity: expectedLead.lead,
+      entity: leadInput.lead,
       returnRepresentation: true,
     };
 

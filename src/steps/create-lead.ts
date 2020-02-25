@@ -1,8 +1,8 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
-import { isNumber } from 'util';
+import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
+import { isDate } from 'util';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -13,6 +13,28 @@ export class CreateLead extends BaseStep implements StepInterface {
     field: 'lead',
     type: FieldDefinition.Type.MAP,
     description: 'A map of field names to field values',
+  }];
+  protected expectedRecords: ExpectedRecord[] = [{
+    id: 'lead',
+    type: RecordDefinition.Type.KEYVALUE,
+    fields: [{
+      field: 'leadid',
+      type: FieldDefinition.Type.NUMERIC,
+      description: "Lead's Dynamics ID",
+    }, {
+      field: 'emailaddress1',
+      type: FieldDefinition.Type.EMAIL,
+      description: "Lead's Email Address",
+    }, {
+      field: 'createdon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was created',
+    }, {
+      field: 'modifiedon',
+      type: FieldDefinition.Type.DATETIME,
+      description: 'The date/time the Lead was updated',
+    }],
+    dynamicFields: true,
   }];
 
   async executeStep(step: Step): Promise<RunStepResponse> {
@@ -31,10 +53,22 @@ export class CreateLead extends BaseStep implements StepInterface {
     };
     try {
       const result = await this.client.create(request);
-      return this.pass('Successfully created Lead with ID %s', [result['leadid']]);
+
+      delete result['@odata.etag'];
+      const leadRecord = this.createRecord(result);
+      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [leadRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Lead: %s', [e.toString()]);
     }
+  }
+
+  public createRecord(lead): StepRecord {
+    const obj = {};
+    Object.keys(lead).forEach((key) => {
+      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    });
+    const record = this.keyValue('lead', 'Created Lead', obj);
+    return record;
   }
 
 }
