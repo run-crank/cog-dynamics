@@ -1,0 +1,22 @@
+scenario: CRM Dynamics Lead API with operators Test 
+description: This tests the operators when validating fields of a CRM Dynamics Lead.
+
+steps:
+- step: When I create a dynamics crm lead.
+  data:
+    lead:
+        emailaddress1: crmwop@thisisjust.atomatest.com
+        companyname: H2O Corp
+        firstname: Jade
+        lastname: Cruz
+        subject: Software Testing
+        numberofemployees: 50
+  failAfter: 5
+- step: Then the emailaddress1 field on dynamics crm lead crmwop@thisisjust.atomatest.com should contain atomatest.com
+- step: And the firstname field on dynamics crm lead crmwop@thisisjust.atomatest.com should not be Helen
+- step: And the subject field on dynamics crm lead crmwop@thisisjust.atomatest.com should contain testing
+- step: And the companyname field on dynamics crm lead crmwop@thisisjust.atomatest.com should be H2O Corp
+- step: And the numberofemployees field on dynamics crm lead crmwop@thisisjust.atomatest.com should be greater than 10
+- step: And the createdon field on dynamics crm lead crmwop@thisisjust.atomatest.com should not be Tue Jun 06 2023 10:50:13 GMT+0000
+- step: And the address1_city field on dynamics crm lead crmwop@thisisjust.atomatest.com should not be anything
+- step: Finally, delete the crmwop@thisisjust.atomatest.com dynamics crm lead
