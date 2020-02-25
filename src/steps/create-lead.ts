@@ -2,6 +2,7 @@
 
 import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
 import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
+import { isDate } from 'util';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -63,9 +64,9 @@ export class CreateLead extends BaseStep implements StepInterface {
 
   public createRecord(lead): StepRecord {
     const obj = {};
-    Object.keys(lead).forEach(key => obj[key] = lead[key]);
-    obj['createdon'] = obj['createdon'].toISOString();
-    obj['modifiedon'] = obj['modifiedon'].toISOString();
+    Object.keys(lead).forEach((key) => {
+      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    });
     const record = this.keyValue('lead', 'Created Lead', obj);
     return record;
   }

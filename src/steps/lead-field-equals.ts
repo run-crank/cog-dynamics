@@ -99,9 +99,9 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
   public createRecord(lead): StepRecord {
     const obj = {};
-    Object.keys(lead).forEach(key => obj[key] = lead[key]);
-    obj['createdon'] = obj['createdon'].toISOString();
-    obj['modifiedon'] = obj['modifiedon'].toISOString();
+    Object.keys(lead).forEach((key) => {
+      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    });
     const record = this.keyValue('lead', 'Checked Lead', obj);
     return record;
   }
