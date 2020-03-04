@@ -80,8 +80,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
         delete lead['@odata.etag'];
         leadRecord = this.createRecord(lead);
       }
-
-      if (this.compare(operator, actualValue, expectedValue)) {
+      if (this.compare(operator, String(actualValue), String(expectedValue))) {
         return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue], [leadRecord]);
       } else {
         return this.fail(this.operatorFailMessages[operator], [field, expectedValue, actualValue], [leadRecord]);
