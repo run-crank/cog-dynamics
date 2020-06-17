@@ -4,12 +4,12 @@ import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-ste
 import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
 import * as util from '@run-crank/utilities';
 import { baseOperators } from '../client/constants/operators';
-import { isDate } from 'util';
+import { isDate, isNullOrUndefined } from 'util';
 
 export class LeadFieldEquals extends BaseStep implements StepInterface {
 
   protected stepName: string = 'Check a field on a Dynamics CRM Lead';
-  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be less than|be greater than|be|contain|not be|not contain) (?<expectedValue>.+)';
+  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be set|not be set|be less than|be greater than|be one of|be|contain|not be one of|not be|not contain) ?(?<expectedValue>.+)?';
   protected stepType: StepDefinition.Type = StepDefinition.Type.VALIDATION;
   protected expectedFields: Field[] = [{
     field: 'email',
@@ -23,11 +23,12 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     field: 'operator',
     type: FieldDefinition.Type.STRING,
     optionality: FieldDefinition.Optionality.OPTIONAL,
-    description: 'Check Logic (be, not be, contain, not contain, be greater than, or be less than)',
+    description: 'Check Logic (be, not be, contain, not contain, be greater than, be less than, be set, not be set, be one of, or not be one of)',
   }, {
     field: 'expectedValue',
     type: FieldDefinition.Type.ANYSCALAR,
     description: 'Expected field value',
+    optionality: FieldDefinition.Optionality.OPTIONAL,
   }];
 
   protected expectedRecords: ExpectedRecord[] = [{
@@ -66,6 +67,10 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     };
     let actualValue;
 
+    if (isNullOrUndefined(expectedValue) && !(operator == 'be set' || operator == 'not be set')) {
+      return this.error("The operator '%s' requires an expected value. Please provide one.", [operator]);
+    }
+
     try {
       const records = await this.client.retrieveMultiple(request);
       const lead = records.find((lead: any) => lead['emailaddress1'] == email);
@@ -80,11 +85,12 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
         delete lead['@odata.etag'];
         leadRecord = this.createRecord(lead);
       }
-      if (this.compare(operator, String(actualValue), String(expectedValue))) {
-        return this.pass(this.operatorSuccessMessages[operator], [field, expectedValue], [leadRecord]);
-      } else {
-        return this.fail(this.operatorFailMessages[operator], [field, expectedValue, actualValue], [leadRecord]);
-      }
+
+      const result = this.assert(operator, String(actualValue), String(expectedValue), field);
+
+      return result.valid ? this.pass(result.message, [], [leadRecord])
+        : this.fail(result.message, [], [leadRecord]);
+
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
         return this.error('%s Please provide one of: %s', [e.message, baseOperators.join(', ')]);
