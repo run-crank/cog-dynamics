@@ -3,6 +3,7 @@
 import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
 import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
 import { isDate } from 'util';
+import * as moment from 'moment';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
@@ -39,10 +40,12 @@ export class CreateLead extends BaseStep implements StepInterface {
 
   async executeStep(step: Step): Promise<RunStepResponse> {
     const stepData: any = step.getData().toJavaScript();
-
+    const dateTokenFormat = /\d{4}-\d{2}-\d{2}(?:.?\d{2}:\d{2}:\d{2})?/;
     for (const key in stepData.lead) {
       if (!isNaN(stepData.lead[key])) {
         stepData.lead[key] = parseFloat(stepData.lead[key]);
+      } else if (dateTokenFormat.test(stepData.lead[key])) {
+        stepData.lead[key] = moment(stepData.lead[key]).format('YYYY-MM-DD');
       }
     }
 
