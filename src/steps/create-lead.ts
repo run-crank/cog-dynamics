@@ -46,7 +46,7 @@ export class CreateLead extends BaseStep implements StepInterface {
       if (!isNaN(stepData.lead[key])) {
         stepData.lead[key] = parseFloat(stepData.lead[key]);
       } else if (dateTokenFormat.test(stepData.lead[key])) {
-        const midnightReference = chrono.parseDate('{{date(midnight utc)}}', new Date()).toISOString().split('T')[1];
+        const midnightReference = chrono.parseDate('midnight utc', new Date()).toISOString().split('T')[1];
         stepData.lead[key] = stepData.lead[key].includes(midnightReference) ? moment(stepData.lead[key]).format('YYYY-MM-DD') : stepData.lead[key];
       }
     }
