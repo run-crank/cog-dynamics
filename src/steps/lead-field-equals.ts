@@ -86,7 +86,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
         leadRecord = this.createRecord(lead);
       }
 
-      const result = this.assert(operator, String(actualValue), String(expectedValue), field);
+      const result = this.assert(operator, actualValue, expectedValue, field);
 
       return result.valid ? this.pass(result.message, [], [leadRecord])
         : this.fail(result.message, [], [leadRecord]);
