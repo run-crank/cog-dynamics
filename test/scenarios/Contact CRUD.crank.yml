@@ -1,0 +1,14 @@
+scenario: Contact CRUD Test
+description: Tests Contact creation, validation, and deletion steps.
+
+steps:
+- step: Given I create a Dynamics CRM Contact.
+  data:
+    contact:
+        emailaddress1: test@thisisjust.atomatest.com
+        firstname: Crank
+        lastname: Test
+- waitFor: 5
+  step: Then the emailaddress1 field on Dynamics CRM Contact test@thisisjust.atomatest.com should be test@thisisjust.atomatest.com
+- step: Then the fullname field on Dynamics CRM Contact test@thisisjust.atomatest.com should be Crank Test
+- step: Finally, delete the test@thisisjust.atomatest.com Dynamics CRM Contact
