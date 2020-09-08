@@ -1,9 +1,9 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
+import { BaseStep, Field, StepInterface, ExpectedRecord } from '../../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../../proto/cog_pb';
 import * as util from '@run-crank/utilities';
-import { baseOperators } from '../client/constants/operators';
+import { baseOperators } from '../../client/constants/operators';
 import { isDate, isNullOrUndefined } from 'util';
 
 export class LeadFieldEquals extends BaseStep implements StepInterface {
