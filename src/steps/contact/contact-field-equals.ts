@@ -1,20 +1,20 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface, ExpectedRecord } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../proto/cog_pb';
+import { BaseStep, Field, StepInterface, ExpectedRecord } from '../../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse, RecordDefinition, StepRecord } from '../../proto/cog_pb';
 import * as util from '@run-crank/utilities';
-import { baseOperators } from '../client/constants/operators';
+import { baseOperators } from '../../client/constants/operators';
 import { isDate, isNullOrUndefined } from 'util';
 
-export class LeadFieldEquals extends BaseStep implements StepInterface {
+export class ContactFieldEquals extends BaseStep implements StepInterface {
 
-  protected stepName: string = 'Check a field on a Dynamics CRM Lead';
-  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be set|not be set|be less than|be greater than|be one of|be|contain|not be one of|not be|not contain) ?(?<expectedValue>.+)?';
+  protected stepName: string = 'Check a field on a Dynamics CRM Contact';
+  protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm contact (?<email>.+) should (?<operator>be set|not be set|be less than|be greater than|be one of|be|contain|not be one of|not be|not contain) ?(?<expectedValue>.+)?';
   protected stepType: StepDefinition.Type = StepDefinition.Type.VALIDATION;
   protected expectedFields: Field[] = [{
     field: 'email',
     type: FieldDefinition.Type.EMAIL,
-    description: "Lead's email address",
+    description: "Contact's email address",
   }, {
     field: 'field',
     type: FieldDefinition.Type.STRING,
@@ -32,24 +32,28 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
   }];
 
   protected expectedRecords: ExpectedRecord[] = [{
-    id: 'lead',
+    id: 'contact',
     type: RecordDefinition.Type.KEYVALUE,
     fields: [{
-      field: 'leadid',
+      field: 'contactid',
       type: FieldDefinition.Type.NUMERIC,
-      description: "Lead's Dynamics ID",
+      description: "Contact's Dynamics ID",
     }, {
       field: 'emailaddress1',
       type: FieldDefinition.Type.EMAIL,
-      description: "Lead's Email Address",
+      description: "Contact's Email Address",
+    }, {
+      field: 'fullname',
+      type: FieldDefinition.Type.STRING,
+      description: "Contact's Fullname",
     }, {
       field: 'createdon',
       type: FieldDefinition.Type.DATETIME,
-      description: 'The date/time the Lead was created',
+      description: 'The date/time the Contact was created',
     }, {
       field: 'modifiedon',
       type: FieldDefinition.Type.DATETIME,
-      description: 'The date/time the Lead was updated',
+      description: 'The date/time the Contact was updated',
     }],
     dynamicFields: true,
   }];
@@ -61,7 +65,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     const operator: string = stepData.operator || 'be';
     const expectedValue: string = stepData.expectedValue;
     const request = {
-      collection: 'leads',
+      collection: 'contacts',
       filter: `startswith(emailaddress1, '${stepData.email}')`,
       count: true,
     };
@@ -73,44 +77,44 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
 
     try {
       const records = await this.client.retrieveMultiple(request);
-      const lead = records.find((lead: any) => lead['emailaddress1'] == email);
-      let leadRecord;
-      if (!lead) {
-        return this.error('No Lead was found with email %s', [email]);
+      const contact = records.find((contact: any) => contact['emailaddress1'] == email);
+      let contactRecord;
+      if (!contact) {
+        return this.error('No Contact was found with email %s', [email]);
       } else {
-        actualValue = lead[field];
-        if (isDate(lead[field])) {
-          actualValue = lead[field].toISOString();
+        actualValue = contact[field];
+        if (isDate(contact[field])) {
+          actualValue = contact[field].toISOString();
         }
-        delete lead['@odata.etag'];
-        leadRecord = this.createRecord(lead);
+        delete contact['@odata.etag'];
+        contactRecord = this.createRecord(contact);
       }
 
       const result = this.assert(operator, actualValue, expectedValue, field);
 
-      return result.valid ? this.pass(result.message, [], [leadRecord])
-        : this.fail(result.message, [], [leadRecord]);
+      return result.valid ? this.pass(result.message, [], [contactRecord])
+        : this.fail(result.message, [], [contactRecord]);
 
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
         return this.error('%s Please provide one of: %s', [e.message, baseOperators.join(', ')]);
       }
       if (e instanceof util.InvalidOperandError) {
-        return this.error('There was an error checking the lead field: %s', [e.message]);
+        return this.error('There was an error checking the contact field: %s', [e.message]);
       }
-      return this.error('There was an checking the lead field: %s', [e.toString()]);
+      return this.error('There was an checking the contact field: %s', [e.toString()]);
     }
   }
 
-  public createRecord(lead): StepRecord {
+  public createRecord(contact): StepRecord {
     const obj = {};
-    Object.keys(lead).forEach((key) => {
-      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    Object.keys(contact).forEach((key) => {
+      obj[key] = isDate(contact[key]) ? contact[key].toISOString() : contact[key];
     });
-    const record = this.keyValue('lead', 'Checked Lead', obj);
+    const record = this.keyValue('contact', 'Checked Contact', obj);
     return record;
   }
 
 }
 
-export { LeadFieldEquals as Step };
+export { ContactFieldEquals as Step };

@@ -1,7 +1,7 @@
 /*tslint:disable:no-else-after-return*/
 
-import { BaseStep, Field, StepInterface } from '../core/base-step';
-import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../proto/cog_pb';
+import { BaseStep, Field, StepInterface } from '../../core/base-step';
+import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../../proto/cog_pb';
 
 export class DeleteLead extends BaseStep implements StepInterface {
 

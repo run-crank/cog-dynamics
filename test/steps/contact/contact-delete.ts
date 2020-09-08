@@ -4,12 +4,12 @@ import { default as sinon } from 'ts-sinon';
 import * as sinonChai from 'sinon-chai';
 import 'mocha';
 
-import { Step as ProtoStep, StepDefinition, FieldDefinition, RunStepResponse } from '../../src/proto/cog_pb';
-import { Step } from '../../src/steps/delete-lead';
+import { Step as ProtoStep, StepDefinition, FieldDefinition, RunStepResponse } from '../../../src/proto/cog_pb';
+import { Step } from '../../../src/steps/contact/contact-delete';
 
 chai.use(sinonChai);
 
-describe('DeleteLeadStep', () => {
+describe('DeleteContactStep', () => {
   const expect = chai.expect;
   let protoStep: ProtoStep;
   let stepUnderTest: Step;
@@ -25,9 +25,9 @@ describe('DeleteLeadStep', () => {
 
   it('should return expected step metadata', () => {
     const stepDef: StepDefinition = stepUnderTest.getDefinition();
-    expect(stepDef.getStepId()).to.equal('DeleteLead');
-    expect(stepDef.getName()).to.equal('Delete a Dynamics CRM Lead');
-    expect(stepDef.getExpression()).to.equal('delete the (?<email>.+) dynamics crm lead');
+    expect(stepDef.getStepId()).to.equal('DeleteContact');
+    expect(stepDef.getName()).to.equal('Delete a Dynamics CRM Contact');
+    expect(stepDef.getExpression()).to.equal('delete the (?<email>.+) dynamics crm contact');
     expect(stepDef.getType()).to.equal(StepDefinition.Type.ACTION);
   });
 
@@ -37,17 +37,17 @@ describe('DeleteLeadStep', () => {
       return field.toObject();
     });
 
-    // Lead field
-    const lead: any = fields.filter(f => f.key === 'email')[0];
-    expect(lead.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
-    expect(lead.type).to.equal(FieldDefinition.Type.EMAIL);
+    // Contact field
+    const contact: any = fields.filter(f => f.key === 'email')[0];
+    expect(contact.optionality).to.equal(FieldDefinition.Optionality.REQUIRED);
+    expect(contact.type).to.equal(FieldDefinition.Type.EMAIL);
   });
 
-  it('should respond with pass if lead is deleted.', async () => {
+  it('should respond with pass if contact is deleted.', async () => {
     // Stub a response that matches expectations.
     const expectedRetrieveResponse: any = [
       {
-        leadid:'anyId',
+        contactid:'anyId',
         emailaddress1: 'anyemail@email.com',
       },
     ];
@@ -57,17 +57,17 @@ describe('DeleteLeadStep', () => {
     clientWrapperStub.delete.resolves(expectedDeleteResponse);
 
     const retrieveRequest = {
-      collection: 'leads',
+      collection: 'contacts',
       select: ['emailaddress1'],
       count: true,
     };
     const deleteRequest = {
-      key: expectedRetrieveResponse[0].leadid,
-      collection: 'leads',
+      key: expectedRetrieveResponse[0].contactid,
+      collection: 'contacts',
     };
     // Set step data corresponding to expectations
-    const expectedLead: any = { email: 'anyemail@email.com' };
-    protoStep.setData(Struct.fromJavaScript(expectedLead));
+    const expectedContact: any = { email: 'anyemail@email.com' };
+    protoStep.setData(Struct.fromJavaScript(expectedContact));
 
     const response: RunStepResponse = await stepUnderTest.executeStep(protoStep);
     expect(clientWrapperStub.retrieveMultiple).to.have.been.calledWith(retrieveRequest);
@@ -75,21 +75,21 @@ describe('DeleteLeadStep', () => {
     expect(response.getOutcome()).to.equal(RunStepResponse.Outcome.PASSED);
   });
 
-  it('should respond with error if not able to get lead with expected email.', async () => {
+  it('should respond with error if not able to get contact with expected email.', async () => {
     // Stub a response that matches expectations.
     const expectedRetrieveResponse: any = [
       {
-        leadid:'anyId',
+        contactid:'anyId',
         emailaddress1: 'NOTanyemail@email.com',
       },
     ];
-    const expectedResponseMessage: string = 'Lead %s does not exist';
+    const expectedResponseMessage: string = 'Contact %s does not exist';
 
     clientWrapperStub.retrieveMultiple.resolves(expectedRetrieveResponse);
 
     // Set step data corresponding to expectations
-    const expectedLead: any = { email: 'anyemail@email.com' };
-    protoStep.setData(Struct.fromJavaScript(expectedLead));
+    const expectedContact: any = { email: 'anyemail@email.com' };
+    protoStep.setData(Struct.fromJavaScript(expectedContact));
 
     const response: RunStepResponse = await stepUnderTest.executeStep(protoStep);
     expect(response.getMessageFormat()).to.equal(expectedResponseMessage);
@@ -102,8 +102,8 @@ describe('DeleteLeadStep', () => {
     clientWrapperStub.retrieveMultiple(expectedError);
 
     // Set step data corresponding to expectations
-    const expectedLead: any = { lead: { email: 'anything@example.com' } };
-    protoStep.setData(Struct.fromJavaScript(expectedLead));
+    const expectedContact: any = { contact: { email: 'anything@example.com' } };
+    protoStep.setData(Struct.fromJavaScript(expectedContact));
 
     const response: RunStepResponse = await stepUnderTest.executeStep(protoStep);
     expect(response.getOutcome()).to.equal(RunStepResponse.Outcome.ERROR);
