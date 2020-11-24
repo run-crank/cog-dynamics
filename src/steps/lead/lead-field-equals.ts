@@ -76,7 +76,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
       const lead = records.find((lead: any) => lead['emailaddress1'] == email);
       let leadRecord;
       if (!lead) {
-        return this.error('No Lead was found with email %s', [email]);
+        return this.fail('No Lead was found with email %s', [email]);
       } else {
         actualValue = lead[field];
         if (isDate(lead[field])) {
