@@ -35,7 +35,7 @@ export class DeleteContact extends BaseStep implements StepInterface {
         const result = await this.client.delete(deleteRequest);
         return this.pass('Successfully deleted Contact %s', [email]);
       } else {
-        return this.error('Contact %s does not exist', [email]);
+        return this.fail('Contact %s does not exist', [email]);
       }
     } catch (e) {
       return this.error('There was a problem deleting the Contact: %s', [e.toString()]);
