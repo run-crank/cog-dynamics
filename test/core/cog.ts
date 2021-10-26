@@ -30,7 +30,7 @@ describe('Cog:GetManifest', () => {
       expect(manifest.getVersion()).to.equal(version);
       done();
     });
-  });
+  }).timeout(10000);
 
   it('should return expected cog auth fields', (done) => {
     cogUnderTest.getManifest(null, (err, manifest: CogManifest) => {
