@@ -77,11 +77,11 @@ describe('CachingClientWrapper', () => {
     };
     const expectedEmail = 'test@example.com';
     cachingClientWrapperUnderTest = new CachingClientWrapper(clientWrapperStub, redisClientStub, idMap);
-    cachingClientWrapperUnderTest.delCache = sinon.spy();
-    cachingClientWrapperUnderTest.delete(deleteRequest, expectedEmail);
+    cachingClientWrapperUnderTest.clearCache = sinon.spy();
+    cachingClientWrapperUnderTest.delete(deleteRequest);
 
     setTimeout(() => {
-      expect(cachingClientWrapperUnderTest.delCache).to.have.been.called;
+      expect(cachingClientWrapperUnderTest.clearCache).to.have.been.called;
       expect(clientWrapperStub.delete).to.have.been.calledWith(deleteRequest);
       done();
     });
@@ -97,9 +97,11 @@ describe('CachingClientWrapper', () => {
       returnRepresentation: true,
     };
     cachingClientWrapperUnderTest = new CachingClientWrapper(clientWrapperStub, redisClientStub, idMap);
+    cachingClientWrapperUnderTest.clearCache = sinon.spy();
     cachingClientWrapperUnderTest.create(request);
 
     setTimeout(() => {
+      expect(cachingClientWrapperUnderTest.clearCache).to.have.been.called;
       expect(clientWrapperStub.create).to.have.been.calledWith(request);
       done();
     });
@@ -136,6 +138,21 @@ describe('CachingClientWrapper', () => {
 
     setTimeout(() => {
       expect(redisClientStub.del).to.have.been.calledWith('expectedKey');
+      done();
+    });
+  });
+
+  it('clearCache', (done) => {
+    redisClientStub.del = sinon.stub().yields();
+    cachingClientWrapperUnderTest = new CachingClientWrapper(clientWrapperStub, redisClientStub, idMap);
+    cachingClientWrapperUnderTest.cachePrefix = 'testPrefix';
+    cachingClientWrapperUnderTest.getCache = sinon.stub().returns(['testKey1', 'testKey2'])
+    cachingClientWrapperUnderTest.clearCache();
+
+    setTimeout(() => {
+      expect(redisClientStub.del).to.have.been.calledWith('testKey1');
+      expect(redisClientStub.del).to.have.been.calledWith('testKey2');
+      expect(redisClientStub.setex).to.have.been.calledWith('cachekeys|testPrefix');
       done();
     });
   });

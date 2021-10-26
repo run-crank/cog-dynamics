@@ -3,7 +3,7 @@ import { promisify } from 'util';
 ​​
 class CachingClientWrapper {
   // cachePrefix is scoped to the specific scenario, request, and requestor
-  public cachePrefix = `${this.idMap.requestId}${this.idMap.scenarioId}${this.idMap.requestorId}Dynamics`;
+  public cachePrefix = `${this.idMap.scenarioId}${this.idMap.requestorId}`;
 
   constructor(private client: ClientWrapper, public redisClient: any, public idMap: any) {
     this.redisClient = redisClient;
@@ -21,7 +21,7 @@ class CachingClientWrapper {
       return await this.client.retrieveMultiple(request);
     }
     // The request.collection in this case will be either 'contacts' or 'leads'
-    const cachekey = `${this.cachePrefix}${request.collection}${email}`;
+    const cachekey = `Dynamics|${request.collection}|${email}|${this.cachePrefix}`;
     const stored = await this.getCache(cachekey);
     if (stored) {
       return stored;
@@ -35,15 +35,12 @@ class CachingClientWrapper {
   }
 
   public async create(request: any) {
-    const response = await this.client.create(request);
-    if (response && response.emailaddress1) {
-      await this.delCache(`${this.cachePrefix}${request.collection}${response.emailaddress1}`);
-    }
-    return response;
+    await this.clearCache();
+    return await this.client.create(request);
   }
 
-  public async delete(request: any, email: string) {
-    await this.delCache(`${this.cachePrefix}${request.collection}${email}`);
+  public async delete(request: any) {
+    await this.clearCache();
     return await this.client.delete(request);
   }
 
@@ -69,7 +66,11 @@ class CachingClientWrapper {
 
   public async setCache(key: string, value: any) {
     try {
+      // arrOfKeys will store an array of all cache keys used in this scenario run, so it can be cleared easily
+      const arrOfKeys = await this.getCache(`cachekeys|${this.cachePrefix}`) || [];
+      arrOfKeys.push(key);
       await this.setAsync(key, 600, JSON.stringify(value));
+      await this.setAsync(`cachekeys|${this.cachePrefix}`, 600, JSON.stringify(arrOfKeys));
     } catch (err) {
       console.log(err);
     }
@@ -78,6 +79,19 @@ class CachingClientWrapper {
   public async delCache(key: string) {
     try {
       await this.delAsync(key);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  public async clearCache() {
+    try {
+      // clears all the cachekeys used in this scenario run
+      const keysToDelete = await this.getCache(`cachekeys|${this.cachePrefix}`) || [];
+      if (keysToDelete.length) {
+        keysToDelete.forEach(async (key: string) => await this.delAsync(key));
+      }
+      await this.setAsync(`cachekeys|${this.cachePrefix}`, 600, '[]');
     } catch (err) {
       console.log(err);
     }

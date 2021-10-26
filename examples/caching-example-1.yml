@@ -8,9 +8,9 @@ steps:
         emailaddress1: test@thisisjust.atomatest.com
         firstname: Crank
         lastname: Test
+- step: Then the emailaddress1 field on Dynamics CRM Contact test@thisisjust.atomatest.com should be test@thisisjust.atomatest.com
 - waitFor: 5
-  step: Then the emailaddress1 field on Dynamics CRM Contact test@thisisjust.atomatest.com should be test@thisisjust.atomatest.com
-- step: Then the fullname field on Dynamics CRM Contact test@thisisjust.atomatest.com should be Crank Test
+  step: Then the fullname field on Dynamics CRM Contact test@thisisjust.atomatest.com should be Crank Test
 - step: Then I create a Dynamics CRM Lead.
   data:
     lead:
@@ -19,9 +19,9 @@ steps:
         firstname: Helen
         lastname: Cruzada
         subject: Software Testing
+- step: Then the emailaddress1 field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be o1@thisisjust.atomatest.com
 - waitFor: 5
-  step: Then the emailaddress1 field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be o1@thisisjust.atomatest.com
-- step: Then the firstname field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be Helen
+  step: Then the firstname field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be Helen
 - step: Then the subject field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be Software Testing
 - step: Then the companyname field on Dynamics CRM Lead o1@thisisjust.atomatest.com should be H2O Corp
 - step: Then delete the test@thisisjust.atomatest.com Dynamics CRM Contact
