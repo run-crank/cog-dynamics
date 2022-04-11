@@ -58,8 +58,9 @@ export class CreateLead extends BaseStep implements StepInterface {
       const result = await this.client.create(request);
 
       delete result['@odata.etag'];
-      const leadRecord = this.createRecord(result);
-      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [leadRecord]);
+      const record = this.createRecord(result);
+      const orderedRecord = this.createOrderedRecord(result, stepData['__stepOrder']);
+      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [record, orderedRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Lead: %s', [e.toString()]);
     }
@@ -71,6 +72,15 @@ export class CreateLead extends BaseStep implements StepInterface {
       obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
     });
     const record = this.keyValue('lead', 'Created Lead', obj);
+    return record;
+  }
+
+  public createOrderedRecord(lead, stepOrder = 1): StepRecord {
+    const obj = {};
+    Object.keys(lead).forEach((key) => {
+      obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
+    });
+    const record = this.keyValue(`lead.${stepOrder}`, `Created Lead from Step ${stepOrder}`, obj);
     return record;
   }
 

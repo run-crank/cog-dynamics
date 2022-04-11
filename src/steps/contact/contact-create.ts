@@ -62,8 +62,9 @@ export class CreateContact extends BaseStep implements StepInterface {
       const result = await this.client.create(request);
 
       delete result['@odata.etag'];
-      const contactRecord = this.createRecord(result);
-      return this.pass('Successfully created Contact with ID %s', [result['contactid']], [contactRecord]);
+      const record = this.createRecord(result);
+      const orderedRecord = this.createOrderedRecord(result, stepData['__stepOrder']);
+      return this.pass('Successfully created Contact with ID %s', [result['contactid']], [record, orderedRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Contact: %s', [e.toString()]);
     }
@@ -75,6 +76,15 @@ export class CreateContact extends BaseStep implements StepInterface {
       obj[key] = isDate(contact[key]) ? contact[key].toISOString() : contact[key];
     });
     const record = this.keyValue('contact', 'Created Contact', obj);
+    return record;
+  }
+
+  public createOrderedRecord(contact, stepOrder = 1): StepRecord {
+    const obj = {};
+    Object.keys(contact).forEach((key) => {
+      obj[key] = isDate(contact[key]) ? contact[key].toISOString() : contact[key];
+    });
+    const record = this.keyValue(`contact.${stepOrder}`, `Created Contact from Step ${stepOrder}`, obj);
     return record;
   }
 
