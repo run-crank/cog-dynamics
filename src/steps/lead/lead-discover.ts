@@ -58,7 +58,7 @@ export class DiscoverLead extends BaseStep implements StepInterface {
         return this.fail('No lead was found with email %s', [email]);
       } else {
         delete lead['@odata.etag'];
-        let leadRecord = this.createRecord(lead);
+        const leadRecord = this.createRecord(lead);
         return this.pass('Successfully discovered fields on lead', [], [leadRecord]);
       }
     } catch (e) {

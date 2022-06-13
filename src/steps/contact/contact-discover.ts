@@ -58,7 +58,7 @@ export class DiscoverContact extends BaseStep implements StepInterface {
         return this.fail('No contact was found with email %s', [email]);
       } else {
         delete contact['@odata.etag'];
-        let contactRecord = this.createRecord(contact);
+        const contactRecord = this.createRecord(contact);
         return this.pass('Successfully discovered fields on contact', [], [contactRecord]);
       }
     } catch (e) {
