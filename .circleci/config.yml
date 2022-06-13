@@ -25,17 +25,17 @@ executors:
     environment:
       IMAGE_NAME: automatoninc/dynamics
     docker:
-      - image: cimg/base:stable
+      - image: circleci/buildpack-deps:stretch
   docker-user:
     environment:
       IMAGE_NAME: automatoninc/dynamics
     machine:
-      image: ubuntu-2004:202201-02
+      image: circleci/classic:latest
 
 jobs:
   test:
     docker:
-      - image: cimg/node:12.0
+      - image: circleci/node:12
       - image: redis
     steps:
       - checkout

@@ -80,7 +80,7 @@ export class ContactFieldEquals extends BaseStep implements StepInterface {
       const contact = records.find((contact: any) => contact['emailaddress1'] == email);
       let contactRecord;
       if (!contact) {
-        return this.error('No contact was found with email %s', [email]);
+        return this.error('No Contact was found with email %s', [email]);
       } else {
         actualValue = contact[field];
         if (isDate(contact[field])) {
@@ -102,7 +102,7 @@ export class ContactFieldEquals extends BaseStep implements StepInterface {
       if (e instanceof util.InvalidOperandError) {
         return this.error('There was an error checking the contact field: %s', [e.message]);
       }
-      return this.error('There was an error checking the contact field: %s', [e.toString()]);
+      return this.error('There was an checking the contact field: %s', [e.toString()]);
     }
   }
 
