@@ -78,7 +78,7 @@ export class ContactFieldEquals extends BaseStep implements StepInterface {
     try {
       const records = await this.client.retrieveMultiple(request);
       const contact = records.find((contact: any) => contact['emailaddress1'] == email);
-      let contactRecord;
+      let contactRecords = [];
       if (!contact) {
         return this.error('No contact was found with email %s', [email]);
       } else {
@@ -87,13 +87,13 @@ export class ContactFieldEquals extends BaseStep implements StepInterface {
           actualValue = contact[field].toISOString();
         }
         delete contact['@odata.etag'];
-        contactRecord = this.createRecord(contact);
+        contactRecords = this.createRecords(contact, stepData['__stepOrder']);
       }
 
       const result = this.assert(operator, actualValue, expectedValue, field);
 
-      return result.valid ? this.pass(result.message, [], [contactRecord])
-        : this.fail(result.message, [], [contactRecord]);
+      return result.valid ? this.pass(result.message, [], contactRecords)
+        : this.fail(result.message, [], contactRecords);
 
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
@@ -106,13 +106,18 @@ export class ContactFieldEquals extends BaseStep implements StepInterface {
     }
   }
 
-  public createRecord(contact): StepRecord {
+  public createRecords(contact, stepOrder = 1): StepRecord[] {
     const obj = {};
     Object.keys(contact).forEach((key) => {
       obj[key] = isDate(contact[key]) ? contact[key].toISOString() : contact[key];
     });
-    const record = this.keyValue('contact', 'Checked Contact', obj);
-    return record;
+
+    const records = [];
+    // Base Record
+    records.push(this.keyValue('contact', 'Checked Contact', obj));
+    // Ordered Record
+    records.push(this.keyValue(`contact.${stepOrder}`, `Checked Contact from Step ${stepOrder}`, obj));
+    return records;
   }
 
 }

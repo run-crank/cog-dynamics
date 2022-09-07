@@ -74,7 +74,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     try {
       const records = await this.client.retrieveMultiple(request);
       const lead = records.find((lead: any) => lead['emailaddress1'] == email);
-      let leadRecord;
+      let leadRecords = [];
       if (!lead) {
         return this.fail('No Lead was found with email %s', [email]);
       } else {
@@ -83,13 +83,13 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
           actualValue = lead[field].toISOString();
         }
         delete lead['@odata.etag'];
-        leadRecord = this.createRecord(lead);
+        leadRecords = this.createRecords(lead, stepData['__stepOrder']);
       }
 
       const result = this.assert(operator, actualValue, expectedValue, field);
 
-      return result.valid ? this.pass(result.message, [], [leadRecord])
-        : this.fail(result.message, [], [leadRecord]);
+      return result.valid ? this.pass(result.message, [], leadRecords)
+        : this.fail(result.message, [], leadRecords);
 
     } catch (e) {
       if (e instanceof util.UnknownOperatorError) {
@@ -102,13 +102,18 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
     }
   }
 
-  public createRecord(lead): StepRecord {
+  public createRecords(lead, stepOrder = 1): StepRecord[] {
     const obj = {};
     Object.keys(lead).forEach((key) => {
       obj[key] = isDate(lead[key]) ? lead[key].toISOString() : lead[key];
     });
-    const record = this.keyValue('lead', 'Checked Lead', obj);
-    return record;
+
+    const records = [];
+    // Base Record
+    records.push(this.keyValue('lead', 'Checked Lead', obj));
+    // Ordered Record
+    records.push(this.keyValue(`lead.${stepOrder}`, `Checked Lead from Step ${stepOrder}`, obj));
+    return records;
   }
 
 }
