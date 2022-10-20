@@ -86,7 +86,7 @@ export class LeadFieldEquals extends BaseStep implements StepInterface {
         leadRecords = this.createRecords(lead, stepData['__stepOrder']);
       }
 
-      const result = this.assert(operator, actualValue, expectedValue, field);
+      const result = this.assert(operator, actualValue, expectedValue, field, stepData['__piiSuppressionLevel']);
 
       return result.valid ? this.pass(result.message, [], leadRecords)
         : this.fail(result.message, [], leadRecords);
