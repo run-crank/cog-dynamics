@@ -9,6 +9,7 @@ export interface StepInterface {
   getId(): string;
   getDefinition(): StepDefinition;
   executeStep(step: PbStep): Promise<RunStepResponse>;
+  bulksupport?: boolean;
 }
 
 export interface Field {
@@ -72,6 +73,12 @@ export abstract class BaseStep {
         expectedField.setOptionality(field.optionality);
       } else {
         expectedField.setOptionality(FieldDefinition.Optionality.REQUIRED);
+      }
+
+      if (field.hasOwnProperty('bulksupport')) {
+        expectedField.setBulksupport(field.bulksupport);
+      } else {
+        expectedField.setBulksupport(false);
       }
 
       stepDefinition.addExpectedFields(expectedField);
