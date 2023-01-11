@@ -6,9 +6,11 @@ import { isDate } from 'util';
 
 export class DiscoverContact extends BaseStep implements StepInterface {
 
-  protected stepName: string = 'Discover fields on a Dynamics CRM Contact';
+  protected stepName: string = 'Discover fields on a Dynamics CRM contact';
   protected stepExpression: string = 'discover fields on dynamics crm contact (?<email>.+)';
   protected stepType: StepDefinition.Type = StepDefinition.Type.ACTION;
+  protected actionList: string[] = ['discover'];
+  protected targetObject: string = 'Contact';
   protected expectedFields: Field[] = [{
     field: 'email',
     type: FieldDefinition.Type.EMAIL,

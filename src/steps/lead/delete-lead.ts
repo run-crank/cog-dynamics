@@ -5,9 +5,11 @@ import { Step, FieldDefinition, StepDefinition, RunStepResponse } from '../../pr
 
 export class DeleteLead extends BaseStep implements StepInterface {
 
-  protected stepName: string = 'Delete a Dynamics CRM Lead';
+  protected stepName: string = 'Delete a Dynamics CRM lead';
   protected stepExpression: string = 'delete the (?<email>.+) dynamics crm lead';
   protected stepType: StepDefinition.Type = StepDefinition.Type.ACTION;
+  protected actionList: string[] = ['delete'];
+  protected targetObject: string = 'Lead';
   protected expectedFields: Field[] = [{
     field: 'email',
     type: FieldDefinition.Type.EMAIL,

@@ -24,7 +24,7 @@ describe('CreateContactStep', () => {
   it('should return expected step metadata', () => {
     const stepDef: StepDefinition = stepUnderTest.getDefinition();
     expect(stepDef.getStepId()).to.equal('CreateContact');
-    expect(stepDef.getName()).to.equal('Create a Dynamics CRM Contact');
+    expect(stepDef.getName()).to.equal('Create a Dynamics CRM contact');
     expect(stepDef.getExpression()).to.equal('create a dynamics crm contact');
     expect(stepDef.getType()).to.equal(StepDefinition.Type.ACTION);
   });
