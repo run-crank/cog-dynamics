@@ -8,9 +8,11 @@ import { isDate, isNullOrUndefined } from 'util';
 
 export class LeadFieldEquals extends BaseStep implements StepInterface {
 
-  protected stepName: string = 'Check a field on a Dynamics CRM Lead';
+  protected stepName: string = 'Check a field on a Dynamics CRM lead';
   protected stepExpression: string = 'the (?<field>[a-zA-Z0-9_]+) field on dynamics crm lead (?<email>.+) should (?<operator>be set|not be set|be less than|be greater than|be one of|be|contain|not be one of|not be|not contain|match|not match) ?(?<expectedValue>.+)?';
   protected stepType: StepDefinition.Type = StepDefinition.Type.VALIDATION;
+  protected actionList: string[] = ['check'];
+  protected targetObject: string = 'Lead';
   protected expectedFields: Field[] = [{
     field: 'email',
     type: FieldDefinition.Type.EMAIL,

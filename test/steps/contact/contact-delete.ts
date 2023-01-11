@@ -26,7 +26,7 @@ describe('DeleteContactStep', () => {
   it('should return expected step metadata', () => {
     const stepDef: StepDefinition = stepUnderTest.getDefinition();
     expect(stepDef.getStepId()).to.equal('DeleteContact');
-    expect(stepDef.getName()).to.equal('Delete a Dynamics CRM Contact');
+    expect(stepDef.getName()).to.equal('Delete a Dynamics CRM contact');
     expect(stepDef.getExpression()).to.equal('delete the (?<email>.+) dynamics crm contact');
     expect(stepDef.getType()).to.equal(StepDefinition.Type.ACTION);
   });

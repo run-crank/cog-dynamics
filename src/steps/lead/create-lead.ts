@@ -7,9 +7,11 @@ import * as moment from 'moment';
 
 export class CreateLead extends BaseStep implements StepInterface {
 
-  protected stepName: string = 'Create a Dynamics CRM Lead';
+  protected stepName: string = 'Create a Dynamics CRM lead';
   protected stepExpression: string = 'create a dynamics crm lead';
   protected stepType: StepDefinition.Type = StepDefinition.Type.ACTION;
+  protected actionList: string[] = ['create'];
+  protected targetObject: string = 'Lead';
   protected expectedFields: Field[] = [{
     field: 'lead',
     type: FieldDefinition.Type.MAP,
