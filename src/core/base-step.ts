@@ -9,7 +9,6 @@ export interface StepInterface {
   getId(): string;
   getDefinition(): StepDefinition;
   executeStep(step: PbStep): Promise<RunStepResponse>;
-  bulksupport?: boolean;
 }
 
 export interface Field {
@@ -18,6 +17,7 @@ export interface Field {
   description: string;
   help?: string;
   optionality?: number;
+  bulksupport?: boolean;
 }
 
 export interface ExpectedRecord {
