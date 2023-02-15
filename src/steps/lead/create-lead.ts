@@ -61,8 +61,9 @@ export class CreateLead extends BaseStep implements StepInterface {
 
       delete result['@odata.etag'];
       const record = this.createRecord(result);
+      const passingRecord = this.createPassingRecord(result, Object.keys(stepData.lead));
       const orderedRecord = this.createOrderedRecord(result, stepData['__stepOrder']);
-      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [record, orderedRecord]);
+      return this.pass('Successfully created Lead with ID %s', [result['leadid']], [record, passingRecord, orderedRecord]);
     } catch (e) {
       return this.error('There was a problem creating the Lead: %s', [e.toString()]);
     }
@@ -75,6 +76,23 @@ export class CreateLead extends BaseStep implements StepInterface {
     });
     const record = this.keyValue('lead', 'Created Lead', obj);
     return record;
+  }
+
+  public createPassingRecord(data, fields): StepRecord {
+    const obj = {};
+    Object.keys(data).forEach((key) => {
+      obj[key] = isDate(data[key]) ? data[key].toISOString() : data[key];
+    });
+
+    const filteredData = {};
+    if (obj) {
+      Object.keys(obj).forEach((key) => {
+        if (fields.includes(key)) {
+          filteredData[key] = obj[key];
+        }
+      });
+    }
+    return this.keyValue('exposeOnPass:lead', 'Created Lead', filteredData);
   }
 
   public createOrderedRecord(lead, stepOrder = 1): StepRecord {
