@@ -17,5 +17,5 @@ COPY --from=build /usr/local/bin/dumb-init /usr/local/bin/dumb-init
 COPY --from=build /app .
 COPY . .
 EXPOSE 28866
-LABEL com.automatoninc.cog-for="Dynamics"
+LABEL com.stackmoxie.cog-for="Dynamics"
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--", "node", "build/core/grpc-server.js"]
